@@ -20,11 +20,16 @@ PLUGIN_API int XPluginStart(
 						char *		outSig,
 						char *		outDesc)
 {
+    XPLMDebugString("openFDR: starting\n");
 	strcpy(outName, "openFDR");
 	strcpy(outSig, "zonexecutive.openfdr");
 	strcpy(outDesc, "Flight Data Recorder plugin");
 
+    
     fdr = new FDR();
+
+    XPLMDebugString("openFDR: registering callback\n");
+
     XPLMRegisterFlightLoopCallback(FDRLoopCB, LOOP_INTERVAL_SECONDS, NULL);
     
 	return 1;
@@ -32,6 +37,7 @@ PLUGIN_API int XPluginStart(
 
 PLUGIN_API void	XPluginStop(void)
 {
+    XPLMDebugString("openFDR: stopping\n");
     XPLMUnregisterFlightLoopCallback(FDRLoopCB, NULL);
     delete fdr;
 }

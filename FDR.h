@@ -25,6 +25,5 @@ public:
     bool getRunningStatus();
     bool AircraftStopped();
     bool AircraftOnGround();
-    bool AllEnginesStopped();
     bool OneEngineRunning();
 };

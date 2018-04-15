@@ -5,6 +5,7 @@
 //  Created by Pedro on 15/04/2018.
 //
 
+#include <cmath>
 #include "FDR.h"
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
@@ -34,34 +35,28 @@ void FDR::update(float elapsedMe, float elapsedSim, int counter) {
 }
 
 bool FDR::AircraftOnGround() {
-    return XPLMGetDataf(XPLMFindDataRef("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot")) == 0;
-}
-
-bool FDR::AllEnginesStopped() {
-    int engine_running[8];
-    XPLMGetDatavi(XPLMFindDataRef("sim/flightmodel/engine/ENGN_running"), engine_running, 0, 7);
-    for (int i = 0; i < 8; i++) {
-        if (engine_running[i] == 1) return false;
-    }
-    return true;
+    int h = round(XPLMGetDataf(XPLMFindDataRef("sim/flightmodel/position/y_agl")));
+    return h == 0;
 }
 
 bool FDR::OneEngineRunning() {
+    int engines = XPLMGetDatai(XPLMFindDataRef("sim/aircraft/engine/acf_num_engines"));
     int engine_running[8];
     XPLMGetDatavi(XPLMFindDataRef("sim/flightmodel/engine/ENGN_running"), engine_running, 0, 7);
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < engines; i++) {
         if (engine_running[i] == 1) return true;
     }
     return false;
 }
 
 bool FDR::AircraftStopped() {
-    return XPLMGetDataf(XPLMFindDataRef("sim/flightmodel/position/groundspeed")) == 0;
+    int gs = round(XPLMGetDataf(XPLMFindDataRef("sim/flightmodel/position/groundspeed")));
+    return gs == 0;
 }
 
 bool FDR::getRunningStatus() {
     if (running) {
-        if (AircraftOnGround() && AllEnginesStopped() && AircraftStopped()) {
+        if (AircraftOnGround() && !OneEngineRunning() && AircraftStopped()) {
             XPLMDebugString("openFDR: Stopping recording.\n");
             return false;
         }
@@ -71,5 +66,5 @@ bool FDR::getRunningStatus() {
             return true;
         }
     }
-    return false;
+    return running;
 }
