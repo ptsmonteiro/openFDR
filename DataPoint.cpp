@@ -9,6 +9,7 @@
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
 #include "DataPoint.h"
+#include "utitilies.h"
 
 DataPoint::DataPoint(float ElapsedSim) {
     
@@ -17,35 +18,56 @@ DataPoint::DataPoint(float ElapsedSim) {
     // flight data
     headingDeg = round(readDataF("sim/cockpit2/gauges/indicators/heading_vacuum_deg_mag_pilot"));
     heightFt = round(readDataF("sim/cockpit2/gauges/indicators/radio_altimeter_height_ft_pilot"));
-    altitudeFt = round(readDataF("sim/cockpit2/gauges/altitude_ft_pilot"));
-    verticalSpeedFPM = round(readDataF("sim/cockpit2/gauges/vvi_fpm_pilot"));
+    altitudeFt = round(readDataF("sim/flightmodel/misc/h_ind"));
+    verticalSpeedFPM = round(readDataF("sim/flightmodel/position/vh_ind_fpm"));
     
-    speedIAS = round(readDataF("sim/cockpit2/gauges/airspeed_kts_pilot"));
+    speedIAS = round(readDataF("sim/flightmodel/position/indicated_airspeed"));
     speedMach = readDataF("sim/flightmodel/misc/machno");
     
     pitchDeg = readDataF("sim/flightmodel/position/true_theta");
     bankDeg = readDataF("sim/flightmodel/position/true_phi");
     
+    alpha = readDataF("sim/flightmodel/position/alpha");
     loadFactorG = readDataF("sim/flightmodel/misc/g_total");
     
     // navigation data
-    trackDeg = round(readDataF("sim/flightmodel/position/hpath"));
-    speedGS = round(readDataF("sim/flightmodel/position/groundspeed"));
+    float trueTrack = readDataF("sim/flightmodel/position/hpath");
+    float magVar = readDataF("sim/flightmodel/position/magnetic_variation");
+    
+    trackDeg = round(trueTrack + magVar);
+    speedGS = round(readDataF("sim/cockpit/radios/gps_dme_speed_kts"));
     
     latitudeDeg = readDataF("sim/flightmodel/position/latitude");
     longitudeDeg = readDataF("sim/flightmodel/position/longitude");
 
     // weather
-    windDeg = round(readDataF("sim/weather/wind_direction_degt"));
-    windKt = round(readDataF("sim/weather/wind_speed_kt"));
+    windDeg = round(readDataF("sim/cockpit2/gauges/indicators/wind_heading_deg_mag"));
+    windKt = round(readDataF("sim/cockpit2/gauges/indicators/wind_speed_kts"));
     
-    // control positions between 0 and 100%
-    float tr_engines[4];
-    readDataVF("sim/weather/wind_speed_kt", tr_engines, 4);
-    throttle1 = round(tr_engines[0] * 100);
-    throttle2 = round(tr_engines[1] * 100);
-    throttle3 = round(tr_engines[2] * 100);
-    throttle4 = round(tr_engines[3] * 100);
+    // engines
+    
+    float tr_engines[8];
+    readDataVF("sim/flightmodel/engine/ENGN_thro", tr_engines, 8);
+    engineLever1 = round(tr_engines[0] * 100);
+    engineLever2 = round(tr_engines[1] * 100);
+    engineLever3 = round(tr_engines[2] * 100);
+    engineLever4 = round(tr_engines[3] * 100);
+    engineLever5 = round(tr_engines[4] * 100);
+    engineLever6 = round(tr_engines[5] * 100);
+    engineLever7 = round(tr_engines[6] * 100);
+    engineLever8 = round(tr_engines[7] * 100);
+
+    // engine power
+    float pwr_engines[8];
+    readDataVF("sim/flightmodel/engine/ENGN_power", pwr_engines, 8);
+    enginePower1 = round(pwr_engines[0] * 100);
+    enginePower2 = round(pwr_engines[1] * 100);
+    enginePower3 = round(pwr_engines[2] * 100);
+    enginePower4 = round(pwr_engines[3] * 100);
+    enginePower5 = round(pwr_engines[4] * 100);
+    enginePower6 = round(pwr_engines[5] * 100);
+    enginePower7 = round(pwr_engines[6] * 100);
+    enginePower8 = round(pwr_engines[7] * 100);
     
     brakeLeft = round(readDataF("sim/cockpit2/controls/left_brake_ratio") * 100);
     brakeRight = round(readDataF("sim/cockpit2/controls/right_brake_ratio") * 100);
@@ -63,11 +85,15 @@ DataPoint::DataPoint(float ElapsedSim) {
     
     // telemetry
     autopilotOn = readDataI("sim/cockpit/autopilot/autopilot_mode") == 2;
-    flightDirectorOn = readDataI("sim/cockpit/autopilot/autopilot_mode") == 1;
+    
+    // weights
     weightKg = round(readDataF("sim/flightmodel/weight/m_total"));
     fuelQuantityKg = round(readDataF("sim/flightmodel/weight/m_fuel_total"));
-    cabinAltFt = round(readDataF("sim/cockpit2/pressurization/indicators/cabin_altitude_ft"));
     
+    // cabin
+    cabinAltFt = round(readDataF("sim/cockpit2/pressurization/indicators/cabin_altitude_ft"));
+    cabinVsFPM = round(readDataF("sim/cockpit2/pressurization/indicators/cabin_vvi_fpm"));
+
     // ILS information
     readDataB("sim/cockpit2/radios/indicators/nav1_nav_id", nav1Ident, 4);
     nav1CourseDeg = round(readDataF("sim/cockpit/radios/nav1_course_degm"));
@@ -82,47 +108,3 @@ DataPoint::~DataPoint() {
     
 }
 
-int DataPoint::readDataI(const char *dataref){
-    int value = 0;
-    value = XPLMGetDatai(XPLMFindDataRef(dataref));
-    char buffer[1024];
-    sprintf(buffer, "Read %s = %d\n", dataref, value);
-    XPLMDebugString(buffer);
-    return value;
-}
-
-float DataPoint::readDataF(const char *dataref) {
-    float value = 0;
-    value = XPLMGetDataf(XPLMFindDataRef(dataref));
-    char buffer[1024];
-    sprintf(buffer, "Read %s = %f\n", dataref, value);
-    XPLMDebugString(buffer);
-    return value;
-}
-
-int DataPoint::readDataB(const char *dataref, void *buf, int size) {
-   int read = 0;
-   read = XPLMGetDatab(XPLMFindDataRef(dataref), buf, 0, size - 1);
-   char buffer[1024];
-   sprintf(buffer, "Read %s = %s\n", dataref, buf);
-   XPLMDebugString(buffer);
-   return read;
-}
-
-                       
-int DataPoint::readDataVF(const char *dataref, float *vector, int size) {
-    int i = 0;
-    for (i=0; i<size; i++) {
-        vector[i] = 0;
-    }
-    
-    int readValues = 0;
-    readValues = XPLMGetDatavf(XPLMFindDataRef(dataref), vector, 0, size-1);
-    char buffer[1024];
-    for (i=0; i<readValues; i++) {
-        sprintf(buffer, "Read %s[%d] = %f\n", dataref, i, vector[i]);
-        XPLMDebugString(buffer);
-    }
-    
-    return readValues;
-}

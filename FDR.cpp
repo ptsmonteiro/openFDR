@@ -9,6 +9,7 @@
 #include "FDR.h"
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
+#include "utitilies.h"
 
 FDR::FDR() {
     running = false;
@@ -19,38 +20,45 @@ FDR::~FDR() {
 }
 
 bool FDR::simulatorIsPaused() {
-    return (bool) XPLMGetDatai(XPLMFindDataRef("sim/time/paused"));
+    return (bool) readDataI("sim/time/paused");
 }
 
 void FDR::update(float elapsedMe, float elapsedSim, int counter) {
     if (simulatorIsPaused()) {
         return;
     }
+
+    if (!aircraftNumberOfEngines) {
+        aircraftNumberOfEngines = readDataI("sim/aircraft/engine/acf_num_engines");
+    }
     
     running = getRunningStatus();
     if (!running) return;
 
-    XPLMDebugString("openFDR: recording data point\n");
-    dataPoints.push_back(DataPoint(elapsedSim));
+    int flight_time = round(readDataF("sim/time/total_flight_time_sec"));
+
+    char buffer[1024];
+    sprintf(buffer, "openFDR: recording data point at %d sec (%d points)\n", flight_time, dataPoints.size());
+    XPLMDebugString(buffer);
+    dataPoints.push_back(DataPoint(flight_time));
 }
 
 bool FDR::AircraftOnGround() {
-    int h = round(XPLMGetDataf(XPLMFindDataRef("sim/flightmodel/position/y_agl")));
-    return h == 0;
+    int h = round(readDataF("sim/flightmodel/position/y_agl"));
+    return h <= 0;
 }
 
 bool FDR::OneEngineRunning() {
-    int engines = XPLMGetDatai(XPLMFindDataRef("sim/aircraft/engine/acf_num_engines"));
     int engine_running[8];
-    XPLMGetDatavi(XPLMFindDataRef("sim/flightmodel/engine/ENGN_running"), engine_running, 0, 7);
-    for (int i = 0; i < engines; i++) {
+    readDataVI("sim/flightmodel/engine/ENGN_running", engine_running, 8);
+    for (int i = 0; i < aircraftNumberOfEngines; i++) {
         if (engine_running[i] == 1) return true;
     }
     return false;
 }
 
 bool FDR::AircraftStopped() {
-    int gs = round(XPLMGetDataf(XPLMFindDataRef("sim/flightmodel/position/groundspeed")));
+    int gs = round(readDataF("sim/flightmodel/position/groundspeed"));
     return gs == 0;
 }
 

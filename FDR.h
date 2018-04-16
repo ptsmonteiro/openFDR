@@ -16,6 +16,11 @@ private:
     std::list<DataPoint> dataPoints;
     bool running;
     
+    const char  *aircraftType;
+    bool        aircraftHasRetrLandingGear;
+    int         aircraftNumberOfEngines;
+
+    
 public:
     FDR();
     ~FDR();

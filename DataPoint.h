@@ -24,6 +24,7 @@ class DataPoint {
     float pitchDeg;
     float bankDeg;
     
+    float alpha;
     float loadFactorG;
     
     // navigation data
@@ -35,13 +36,27 @@ class DataPoint {
     
     float latitudeDeg;
     float longitudeDeg;
-    
-    // control positions between 0 and 100%
-    int throttle1;
-    int throttle2;
-    int throttle3;
-    int throttle4;
+        
+    // engine
+    int engineLever1 = 0;
+    int engineLever2 = 0;
+    int engineLever3 = 0;
+    int engineLever4 = 0;
+    int engineLever5 = 0;
+    int engineLever6 = 0;
+    int engineLever7 = 0;
+    int engineLever8 = 0;
 
+    int enginePower1 = 0;
+    int enginePower2 = 0;
+    int enginePower3 = 0;
+    int enginePower4 = 0;
+    int enginePower5 = 0;
+    int enginePower6 = 0;
+    int enginePower7 = 0;
+    int enginePower8 = 0;
+
+    // brake
     int brakeLeft;
     int brakeRight;
     int parkingBrake;
@@ -52,19 +67,20 @@ class DataPoint {
     int rollControl;
     int yawControl;
 
-    // control discreet positions
+    // control ratios
     int flapLever;
     int speedBrakeLever;
     
     // telemetry
     bool autopilotOn;
-    bool flightDirectorOn;
+    
+    // weights
     int weightKg;
     int fuelQuantityKg;
-    int cabinAltFt;
     
-    bool oneEngineRunning;
-    bool aircraftOnGround;
+    // cabin
+    int cabinAltFt;
+    int cabinVsFPM;
     
     // Radio nav information
     char nav1Ident[4];
@@ -76,12 +92,6 @@ class DataPoint {
     
     // VOR information TODO
     
-protected:
-    int readDataI(const char *);
-    float readDataF(const char *);
-    int readDataVF(const char *, float *, int);
-    int readDataB(const char *, void *, int);
-
 public:
     DataPoint(float);
     ~DataPoint();
