@@ -5,20 +5,22 @@
 //  Created by Pedro on 15/04/2018.
 //
 
+#include <sstream>
+#include <string>
 #include <stdio.h>
 #include <list>
 #include "DataPoint.h"
 
 class FDR
 {
-    
 private:
     std::list<DataPoint> dataPoints;
     bool running;
     
-    const char  *aircraftType;
+    char        simulatorVersion[255];
+    char        aircraftType[255];
     bool        aircraftHasRetrLandingGear;
-    int         aircraftNumberOfEngines;
+    int         aircraftNumberOfEngines = 0;
 
     
 public:
@@ -27,8 +29,11 @@ public:
     
     bool simulatorIsPaused();
     void update(float, float, int);
-    bool getRunningStatus();
+    void startFlight();
+    void endFlight();
+    bool runStatus(int);
     bool AircraftStopped();
     bool AircraftOnGround();
     bool OneEngineRunning();
+    void toCSV();
 };

@@ -6,10 +6,12 @@
 //
 
 #include <stdio.h>
+#include <string>
+#include <sstream>
 
 class DataPoint {
 
-    int simulatorElapsedTimeSec;
+    int flightTimeStamp;
     
     // flight data
     int headingDeg;
@@ -93,7 +95,10 @@ class DataPoint {
     // VOR information TODO
     
 public:
+    int elapsedFlightTime;
+    
     DataPoint(float);
     ~DataPoint();
     
+    std::string toCSV(bool);
 };

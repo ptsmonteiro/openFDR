@@ -6,6 +6,9 @@
 //
 
 #include <cmath>
+#include <ctime>
+#include <fstream>
+#include <iostream>
 #include "FDR.h"
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
@@ -13,10 +16,10 @@
 
 FDR::FDR() {
     running = false;
+    readDataB("sim/version/xplane_internal_version", simulatorVersion, sizeof(simulatorVersion));
 }
 
 FDR::~FDR() {
-    
 }
 
 bool FDR::simulatorIsPaused() {
@@ -24,7 +27,11 @@ bool FDR::simulatorIsPaused() {
 }
 
 void FDR::update(float elapsedMe, float elapsedSim, int counter) {
-    if (simulatorIsPaused()) {
+    if (simulatorIsPaused() || elapsedSim < 1) {
+        return;
+    }
+    
+    if (readDataI("sim/operation/prefs/replay_mode")) {
         return;
     }
 
@@ -32,13 +39,12 @@ void FDR::update(float elapsedMe, float elapsedSim, int counter) {
         aircraftNumberOfEngines = readDataI("sim/aircraft/engine/acf_num_engines");
     }
     
-    running = getRunningStatus();
+    int flight_time = round(readDataF("sim/time/total_flight_time_sec"));
+    runStatus(flight_time);
     if (!running) return;
 
-    int flight_time = round(readDataF("sim/time/total_flight_time_sec"));
-
     char buffer[1024];
-    sprintf(buffer, "openFDR: recording data point at %d sec (%d points)\n", flight_time, dataPoints.size());
+    sprintf(buffer, "openFDR: recording data point at %ds\n", flight_time);
     XPLMDebugString(buffer);
     dataPoints.push_back(DataPoint(flight_time));
 }
@@ -62,17 +68,53 @@ bool FDR::AircraftStopped() {
     return gs == 0;
 }
 
-bool FDR::getRunningStatus() {
+bool FDR::runStatus(int flightTime) {
+    
+    if (running && flightTime < dataPoints.back().elapsedFlightTime) {
+        XPLMDebugString("openFDR: Flight was reset.\n");
+        endFlight();
+    }
+    
     if (running) {
         if (AircraftOnGround() && !OneEngineRunning() && AircraftStopped()) {
-            XPLMDebugString("openFDR: Stopping recording.\n");
-            return false;
+            endFlight();
         }
     } else {
-        if (AircraftOnGround() && OneEngineRunning() && AircraftStopped()) {
-            XPLMDebugString("openFDR: Starting recording.\n");
-            return true;
+        if (AircraftOnGround() && OneEngineRunning() && AircraftStopped() && flightTime > 0) {
+            startFlight();
         }
     }
+
     return running;
+}
+
+void FDR::startFlight() {
+    readDataB("sim/aircraft/view/acf_ICAO", aircraftType, sizeof(aircraftType));
+    XPLMDebugString("openFDR: Starting recording.\n");
+    running = true;
+}
+
+void FDR::endFlight() {
+    XPLMDebugString("openFDR: Stopping recording.\n");
+    running = false;
+    toCSV();
+}
+
+void FDR::toCSV() {
+    char timestamp[100];
+    std::time_t t = std::time(nullptr);
+    std:strftime(timestamp, sizeof(timestamp), "%F %T", std::gmtime(&t));
+    
+    char filename[1024];
+    sprintf(filename, "%s %s.csv", aircraftType, timestamp);
+
+    char message[1024];
+    sprintf(message, "openFDR: Writing CSV file %s\n", filename);
+    XPLMDebugString(message);
+
+    std::ofstream outfile;
+    outfile.open(filename);
+    outfile << dataPoints.front().toCSV(true);
+    for (DataPoint dp : dataPoints) outfile << dp.toCSV(false);
+    outfile.close();
 }
