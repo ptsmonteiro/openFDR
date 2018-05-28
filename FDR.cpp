@@ -17,6 +17,8 @@
 FDR::FDR() {
     running = false;
     readDataB("sim/version/xplane_internal_version", simulatorVersion, sizeof(simulatorVersion));
+    
+    config.Load();
 }
 
 FDR::~FDR() {

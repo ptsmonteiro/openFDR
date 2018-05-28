@@ -10,12 +10,15 @@
 #include <stdio.h>
 #include <list>
 #include "DataPoint.h"
+#include "Config.h"
 
 class FDR
 {
 private:
     std::list<DataPoint> dataPoints;
     bool running;
+
+    Config      config;
     
     char        simulatorVersion[255];
     char        aircraftType[255];
