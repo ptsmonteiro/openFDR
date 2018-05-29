@@ -13,8 +13,8 @@
 
 DataPoint::DataPoint(float elapsed) {
     
-    elapsedFlightTime = round(elapsed);
-    flightTimeStamp = round(readDataF("sim/time/zulu_time_sec"));
+    elapsedFlightTime = elapsed;
+    flightTimeStamp = readDataF("sim/time/zulu_time_sec");
     
     // flight data
     headingDeg = round(readDataF("sim/cockpit2/gauges/indicators/heading_vacuum_deg_mag_pilot"));

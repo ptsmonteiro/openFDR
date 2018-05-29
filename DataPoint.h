@@ -11,7 +11,7 @@
 
 class DataPoint {
 
-    int flightTimeStamp;
+    float flightTimeStamp;
     
     // flight data
     int headingDeg;
@@ -95,7 +95,7 @@ class DataPoint {
     // VOR information TODO
     
 public:
-    int elapsedFlightTime;
+    float elapsedFlightTime;
     
     DataPoint(float);
     ~DataPoint();
