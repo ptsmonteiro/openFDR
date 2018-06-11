@@ -11,6 +11,12 @@
 #include "ui.h"
 
 XPWidgetID    PluginWindow = NULL;
+XPWidgetID    widgetFlightNumber = NULL;
+XPWidgetID    widgetOriginICAO = NULL;
+XPWidgetID    widgetDestinationICAO = NULL;
+XPWidgetID    widgetAlternateICAO = NULL;
+XPWidgetID    widgetCruiseAltitude = NULL;
+XPWidgetID    widgetRoute = NULL;
 
 char textAbout[] = "openFDR v1.0 by Pedro Monteiro, 2018.";
 
@@ -49,34 +55,34 @@ XPWidgetID CreatePluginWindow(int x, int y, int w, int h)
 
     XPCreateWidget(xx, y - BORDER_V , xx + 80, yy, 1, captionFltNumber, 0, window, xpWidgetClass_Caption);
     xx += 80 + 10;
-    XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputFltNumber, 0, window, xpWidgetClass_TextField);
+    widgetFlightNumber = XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputFltNumber, 0, window, xpWidgetClass_TextField);
     xx += 60 + 20;
 
     XPCreateWidget(xx, y - BORDER_V , xx + 70, yy, 1, captionOrigin, 0, window, xpWidgetClass_Caption);
     xx += 70 + 10;
-    XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputOrigin, 0, window, xpWidgetClass_TextField);
+    widgetOriginICAO = XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputOrigin, 0, window, xpWidgetClass_TextField);
     xx += 60 + 20;
 
     XPCreateWidget(xx, y - BORDER_V , xx + 90, yy, 1, captionDest, 0, window, xpWidgetClass_Caption);
     xx += 90 + 10;
-    XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputDest, 0, window, xpWidgetClass_TextField);
+    widgetDestinationICAO = XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputDest, 0, window, xpWidgetClass_TextField);
     xx += 60 + 20;
 
     XPCreateWidget(xx, y - BORDER_V , xx + 80, yy, 1, captionAlt, 0, window, xpWidgetClass_Caption);
     xx += 80 + 10;
-    XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputAlt, 0, window, xpWidgetClass_TextField);
+    widgetCruiseAltitude = XPCreateWidget(xx, y - BORDER_V - 2, xx + 60, yy - 2, 1, inputAlt, 0, window, xpWidgetClass_TextField);
 
     xx = x + BORDER_H;
     yy -= LINE_HEIGHT;
 
     XPCreateWidget(xx, yy, xx + 80, yy - LINE_HEIGHT, 1, captionAltitude, 0, window, xpWidgetClass_Caption);
     xx += 80 + 10;
-    XPCreateWidget(xx, yy - 2, xx + 60, yy - LINE_HEIGHT - 2, 1, inputAltitude, 0, window, xpWidgetClass_TextField);
+    widgetCruiseAltitude = XPCreateWidget(xx, yy - 2, xx + 60, yy - LINE_HEIGHT - 2, 1, inputAltitude, 0, window, xpWidgetClass_TextField);
     xx += 60 + 20;
     
     XPCreateWidget(xx, yy, xx + 40, yy - LINE_HEIGHT, 1, captionRoute, 0, window, xpWidgetClass_Caption);
     xx += 40 + 10;
-    XPCreateWidget(xx, yy - 2, x2 - BORDER_H, yy - LINE_HEIGHT - 2, 1, inputRoute, 0, window, xpWidgetClass_TextField);
+    widgetRoute = XPCreateWidget(xx, yy - 2, x2 - BORDER_H, yy - LINE_HEIGHT - 2, 1, inputRoute, 0, window, xpWidgetClass_TextField);
 
     
     // Create a text field

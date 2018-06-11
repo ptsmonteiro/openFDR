@@ -24,7 +24,8 @@ private:
     char        aircraftType[255];
     bool        aircraftHasRetrLandingGear;
     int         aircraftNumberOfEngines = 0;
-
+    int         aircraftEmptyWeight = 0; // /sim/aircraft/weight/acf_m_empty
+    int         aircraftMaxWeight = 0;   // /sim/aircraft/weight/acf_m_max
     
 public:
     FDR();

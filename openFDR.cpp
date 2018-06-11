@@ -5,6 +5,7 @@
 #include "XPLMMenus.h"
 #include "ui.h"
 #include "FDR.h"
+#include <curl/curl.h>
 
 const int LOOP_INTERVAL_SECONDS = 1;
 
@@ -17,9 +18,8 @@ void initMenus() {
     
     // Create our menu
     PluginSubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "openFDR", NULL, 1);
-    PluginMenu = XPLMCreateMenu("openFDR menu", XPLMFindPluginsMenu(),
-                                PluginSubMenuItem, MenuHandler, NULL);
-    XPLMAppendMenuItem(PluginMenu, "Data", (void *) +1, 1);
+    PluginMenu = XPLMCreateMenu("openFDR menu", XPLMFindPluginsMenu(), PluginSubMenuItem, MenuHandler, NULL);
+    XPLMAppendMenuItem(PluginMenu, "Flight", (void *) +1, 1);
 }
 
 

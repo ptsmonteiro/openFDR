@@ -92,6 +92,8 @@ bool FDR::runStatus(int flightTime) {
 
 void FDR::startFlight() {
     readDataB("sim/aircraft/view/acf_ICAO", aircraftType, sizeof(aircraftType));
+    aircraftEmptyWeight = round(readDataF("/sim/aircraft/weight/acf_m_empty"));
+    aircraftMaxWeight = round(readDataF("/sim/aircraft/weight/acf_m_max"));
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
 }
@@ -108,7 +110,7 @@ void FDR::toCSV() {
     std:strftime(timestamp, sizeof(timestamp), "%F %T", std::gmtime(&t));
     
     char filename[1024];
-    sprintf(filename, "%s %s.csv", aircraftType, timestamp);
+    sprintf(filename, "openFDR %s %s.csv", aircraftType, timestamp);
 
     char message[1024];
     sprintf(message, "openFDR: Writing CSV file %s\n", filename);
