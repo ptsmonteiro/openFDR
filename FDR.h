@@ -9,23 +9,21 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "DataPoint.h"
 #include "Config.h"
+#include "DataPoint.h"
+#include "Flight.h"
 
 class FDR
 {
 private:
+    Flight *flight;
     std::list<DataPoint> dataPoints;
     bool running;
 
     Config      config;
     
-    char        simulatorVersion[255];
-    char        aircraftType[255];
     bool        aircraftHasRetrLandingGear;
     int         aircraftNumberOfEngines = 0;
-    int         aircraftEmptyWeight = 0; // /sim/aircraft/weight/acf_m_empty
-    int         aircraftMaxWeight = 0;   // /sim/aircraft/weight/acf_m_max
     
 public:
     FDR();

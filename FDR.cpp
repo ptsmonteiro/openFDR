@@ -16,8 +16,7 @@
 
 FDR::FDR() {
     running = false;
-    readDataB("sim/version/xplane_internal_version", simulatorVersion, sizeof(simulatorVersion));
-    
+    flight = new Flight();
     config.Load();
 }
 
@@ -70,6 +69,7 @@ bool FDR::AircraftStopped() {
     return gs == 0;
 }
 
+/* Start flight / end flight logic */
 bool FDR::runStatus(int flightTime) {
     
     if (running && flightTime < dataPoints.back().elapsedFlightTime) {
@@ -91,11 +91,9 @@ bool FDR::runStatus(int flightTime) {
 }
 
 void FDR::startFlight() {
-    readDataB("sim/aircraft/view/acf_ICAO", aircraftType, sizeof(aircraftType));
-    aircraftEmptyWeight = round(readDataF("/sim/aircraft/weight/acf_m_empty"));
-    aircraftMaxWeight = round(readDataF("/sim/aircraft/weight/acf_m_max"));
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
+    flight->reset();
 }
 
 void FDR::endFlight() {
@@ -107,15 +105,20 @@ void FDR::endFlight() {
 void FDR::toCSV() {
     char timestamp[100];
     std::time_t t = std::time(nullptr);
-    std:strftime(timestamp, sizeof(timestamp), "%F %T", std::gmtime(&t));
+    std:strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M", std::gmtime(&t));
+
+    char flightname[1024];
+    sprintf(flightname, "%s.%s", flight->aircraftType.c_str(), timestamp);
     
     char filename[1024];
-    sprintf(filename, "openFDR %s %s.csv", aircraftType, timestamp);
-
+    sprintf(filename, "%s.openfdr.data.csv", flightname);
+    
     char message[1024];
-    sprintf(message, "openFDR: Writing CSV file %s\n", filename);
+    sprintf(message, "openFDR: Writing data for flight %s\n", flightname);
     XPLMDebugString(message);
 
+    flight->toCSV(std::string(flightname));
+    
     std::ofstream outfile;
     outfile.open(filename);
     outfile << dataPoints.front().toCSV(true);
