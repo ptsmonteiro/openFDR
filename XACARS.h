@@ -10,8 +10,7 @@
 #include "Flight.h"
 
 class XACARS {
-    
-    
+
     std::string xacars_data1;
     std::string xacars_data2;
     std::string xacars_data3;
