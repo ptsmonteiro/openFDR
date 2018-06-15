@@ -14,6 +14,12 @@ using namespace std;
 
 XACARS::XACARS(Config *config) {
     xacars_data1 = "XACARS|1.1";
+    
+    acars_url = config->xacars_acars_url;
+    flight_info_url = config->xacars_flight_info_url;
+    pirep_url = config->xacars_pirep_url;
+    username = config->xacars_username;
+    password = config->xacars_password;
 }
 
 bool XACARS::SyncRequest(std::string url, std::string *response) {
@@ -24,7 +30,7 @@ bool XACARS::SyncRequest(std::string url, std::string *response) {
     message.append(string("data1: ") + xacars_data1 + ", ");
     message.append(string("data2: ") + xacars_data2 + ", ");
     message.append(string("data3: ") + xacars_data3 + ", ");
-    message.append(string("data4: ") + xacars_data4);
+    message.append(string("data4: ") + xacars_data4 + "\n");
     XPLMDebugString(message.c_str());
     
     return true;
@@ -45,7 +51,7 @@ void XACARS::AsyncRequest(std::string url) {
     message.append(string("data1: ") + xacars_data1 + ", ");
     message.append(string("data2: ") + xacars_data2 + ", ");
     message.append(string("data3: ") + xacars_data3 + ", ");
-    message.append(string("data4: ") + xacars_data4);
+    message.append(string("data4: ") + xacars_data4 + "\n");
     XPLMDebugString(message.c_str());
 }
 
@@ -145,8 +151,53 @@ void XACARS::endFlight() {
     AsyncRequest(acars_url);
 }
 
+void XACARS::sendPIREP(string flightfile) {
+    /*
+     DATA2 includes all the data necessary for the PIREP as fields separated by "~". In the following listing each field is a new line, but see the data example below how it really looks like:
+     
+     Username
+     Password
+     Flightnumber
+     Aircraft REG (also used for ICAO)
+     Altitude/Flightlevel
+     Flightrules (IFR or VFR)
+     Departure ICAO
+     Destination ICAO
+     Alternate ICAO
+     Departuretime (dd.mm.yyyy hh:mm)
+     Blocktime (hh:mm)
+     Flighttime (hh:mm)
+     Blockfuel
+     Flightfuel
+     Pax
+     Cargo
+     Online (VATSIM|ICAO|[other])
+     OUT (UNIX timestamp) - time of engine start
+     OFF (UNIX timestamp) - time of takeoff
+     ON (UNIX timestamp) - time of landing
+     IN (UNIX timestamp) - time of engine stop
+     ZFW - zero fuel weight in lbs
+     TOW - take off weight in lbs
+     LW - landing weight in lbs
+     OUT latitude (N/Sxx xx.xxxx)
+     OUT longitude (E/Wxx xx.xxxx)
+     OUT altitude in ft
+     IN latitude (N/Sxx xx.xxxx)
+     IN longitude (E/Wxx xx.xxxx)
+     IN altitude in ft
+     max CLIMB in ft/min
+     max DESCEND in ft/min
+     max IAS in kt
+     max GS in kt
+     A full parameterlist can look like this (spaces inserted for a better readability):
+     
+     pirep.php?DATA1=XACARS|1.1&DATA2=xactesting~ xactestingpass~ xac1001~ F100~ 24000~ IFR~ LOWW~ LOWI~ EDDM~ 01.07.2009 18:32~02:04~01:27~ 1980~ 1456~ 72~ 2100~VATSIM~ 123456719~ 123456729~ 123456739~ 123456749~ 22000~ 25000~ 23000~ N43 12.2810~ E18 12.3802~ 630~ N43 12.2810~ E18 12.3802~ 320~ 2347~ 3202~ 290~ 450
+     */
+}
+
 string XACARS::formatRoute(string route) {
     string formatted(route);
     replace(formatted.begin(), formatted.end(), ' ', '~');
     return formatted;
 }
+

@@ -276,15 +276,15 @@ string DataPoint::getXACARSFormattedLocation() {
     
     // latitude
     result.append(latitudeDeg > 0 ? "N" : "S");
-    minutes = modf(latitudeDeg, &degrees);
-    result.append(to_string(round(degrees)) + " " + to_string(minutes));
+    minutes = modf(latitudeDeg, &degrees) * 60;
+    result.append(to_string((int) round(degrees)) + " " + to_string(minutes));
 
     result.append(" ");
 
     // longitude
     result.append(longitudeDeg > 0 ? "E" : "W");
-    minutes = modf(longitudeDeg, &degrees);
-    result.append(to_string(round(degrees)) + " " + to_string(minutes));
+    minutes = modf(longitudeDeg, &degrees) * 60;
+    result.append(to_string((int) round(degrees)) + " " + to_string(minutes));
     
     return result;
 }
