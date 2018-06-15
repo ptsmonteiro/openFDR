@@ -9,9 +9,7 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "Config.h"
-#include "DataPoint.h"
-#include "Flight.h"
+#include "XACARS.h"
 
 class FDR
 {
@@ -20,6 +18,8 @@ private:
     std::list<DataPoint> dataPoints;
     bool running;
 
+    XACARS      *xacars;
+    
     Config      config;
     
     bool        aircraftHasRetrLandingGear;
@@ -31,7 +31,7 @@ public:
     
     bool simulatorIsPaused();
     void update(float, float, int);
-    void startFlight();
+    void startFlight(int);
     void endFlight();
     bool runStatus(int);
     bool AircraftStopped();

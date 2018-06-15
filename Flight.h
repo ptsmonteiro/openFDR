@@ -28,6 +28,8 @@ public:
     int  cruiseAltitude = 0;
     string route = "";
     
+    string rules = "IFR";
+    
     Flight();
     ~Flight();
     

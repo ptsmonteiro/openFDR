@@ -11,6 +11,8 @@
 #include "DataPoint.h"
 #include "utitilies.h"
 
+using namespace std;
+
 DataPoint::DataPoint(float elapsed) {
     
     elapsedFlightTime = elapsed;
@@ -45,6 +47,8 @@ DataPoint::DataPoint(float elapsed) {
     windDeg = round(readDataF("sim/cockpit2/gauges/indicators/wind_heading_deg_mag"));
     windKt = round(readDataF("sim/cockpit2/gauges/indicators/wind_speed_kts"));
     
+    oat = round(readDataF("sim/cockpit2/temperature/outside_air_temp_degc"));
+
     // engines
     
     float tr_engines[8];
@@ -166,6 +170,8 @@ std::string DataPoint::toCSV(bool headers = false) {
     CSV << ';';
     if (headers) CSV << "WindKt"; else CSV << windKt;
     CSV << ';';
+    if (headers) CSV << "OAT"; else CSV << oat;
+    CSV << ';';
 
     // engines
     if (headers) CSV << "EngineLever1"; else CSV << engineLever1;
@@ -261,3 +267,24 @@ std::string DataPoint::toCSV(bool headers = false) {
     return CSV.str();
 }
 
+string DataPoint::getXACARSFormattedLocation() {
+    // result should be like "N48 7.21916 E16 33.4283"
+    string result = "";
+
+    float degrees = 0;
+    float minutes = 0.0;
+    
+    // latitude
+    result.append(latitudeDeg > 0 ? "N" : "S");
+    minutes = modf(latitudeDeg, &degrees);
+    result.append(to_string(round(degrees)) + " " + to_string(minutes));
+
+    result.append(" ");
+
+    // longitude
+    result.append(longitudeDeg > 0 ? "E" : "W");
+    minutes = modf(longitudeDeg, &degrees);
+    result.append(to_string(round(degrees)) + " " + to_string(minutes));
+    
+    return result;
+}

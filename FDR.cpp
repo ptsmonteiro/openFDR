@@ -18,6 +18,7 @@ FDR::FDR() {
     running = false;
     flight = new Flight();
     config.Load();
+    xacars = new XACARS(&config);
 }
 
 FDR::~FDR() {
@@ -83,23 +84,25 @@ bool FDR::runStatus(int flightTime) {
         }
     } else {
         if (AircraftOnGround() && OneEngineRunning() && AircraftStopped() && flightTime > 0) {
-            startFlight();
+            startFlight(flightTime);
         }
     }
 
     return running;
 }
 
-void FDR::startFlight() {
+void FDR::startFlight(int flightTime) {
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
     flight->reset();
+    xacars->beginFlight(flight, DataPoint(flightTime));
 }
 
 void FDR::endFlight() {
     XPLMDebugString("openFDR: Stopping recording.\n");
     running = false;
     toCSV();
+    xacars->endFlight();
 }
 
 void FDR::toCSV() {

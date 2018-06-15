@@ -11,6 +11,8 @@
 
 class DataPoint {
 
+public:
+
     float flightTimeStamp;
     
     // flight data
@@ -35,6 +37,8 @@ class DataPoint {
     
     int windDeg;
     int windKt;
+    
+    int oat;
     
     float latitudeDeg;
     float longitudeDeg;
@@ -94,11 +98,12 @@ class DataPoint {
     
     // VOR information TODO
     
-public:
     float elapsedFlightTime;
     
     DataPoint(float);
     ~DataPoint();
+    
+    std::string getXACARSFormattedLocation();
     
     std::string toCSV(bool);
 };
