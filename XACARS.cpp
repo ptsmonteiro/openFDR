@@ -45,7 +45,7 @@ bool XACARS::SyncRequest(std::string url, std::string *response) {
     query_url.append(string("&data3=") + xacars_data3);
     query_url.append(string("&data4=") + xacars_data4);
     
-    string message = "openFDR: SyncRequest " + query_url;
+    string message = "openFDR: SyncRequest request: " + query_url;
     XPLMDebugString(message.c_str());
     
     curl_received_data.erase();
@@ -56,6 +56,9 @@ bool XACARS::SyncRequest(std::string url, std::string *response) {
         return false;
     }
 
+    message = "openFDR: SyncRequest received: " + curl_received_data;
+    XPLMDebugString(message.c_str());
+    
     int result = stoi(curl_received_data.substr(0, curl_received_data.find('|')));
     *response = curl_received_data.substr(curl_received_data.find('|')+1, curl_received_data.length());
     
