@@ -5,7 +5,6 @@
 #include "XPLMMenus.h"
 #include "ui.h"
 #include "FDR.h"
-#include <curl/curl.h>
 
 const int LOOP_INTERVAL_SECONDS = 1;
 
@@ -71,4 +70,5 @@ PLUGIN_API void XPluginReceiveMessage(
 					int				inMessage,
 					void *			inParam)
 {
+    
 }

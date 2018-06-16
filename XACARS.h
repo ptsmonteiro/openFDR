@@ -6,6 +6,7 @@
 //
 
 #include <string>
+#include <curl/curl.h>
 #include "DataPoint.h"
 #include "Flight.h"
 #include "Config.h"
@@ -14,6 +15,9 @@ using namespace std;
 
 class XACARS {
 private:
+    
+    CURL *curl;
+    
     string xacars_data1;
     string xacars_data2;
     string xacars_data3;
@@ -34,7 +38,10 @@ private:
 public:
     XACARS(Config *);
     ~XACARS();
-    
+
+    static string curl_received_data;
+    static size_t curlDataHandler(void *, size_t, size_t, void *);
+
     bool testConnection();
     bool getFlightInfo(Flight *);
     void sendPIREP(string flightfile);

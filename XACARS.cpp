@@ -12,6 +12,8 @@
 
 using namespace std;
 
+string XACARS::curl_received_data;
+
 XACARS::XACARS(Config *config) {
     xacars_data1 = "XACARS|1.1";
     
@@ -20,26 +22,42 @@ XACARS::XACARS(Config *config) {
     pirep_url = config->xacars_pirep_url;
     username = config->xacars_username;
     password = config->xacars_password;
+    
+    curl = curl_easy_init();
 }
 
-bool XACARS::SyncRequest(std::string url, std::string *response) {
-    char buffer[4096] = "";
-    //http url request  -> buffer
+XACARS::~XACARS() {
+    curl_easy_cleanup(curl);
+}
 
-    string message = "openFDR: SyncRequest: ";
-    message.append(string("data1: ") + xacars_data1 + ", ");
-    message.append(string("data2: ") + xacars_data2 + ", ");
-    message.append(string("data3: ") + xacars_data3 + ", ");
-    message.append(string("data4: ") + xacars_data4 + "\n");
+size_t XACARS::curlDataHandler(void *ptr, size_t size, size_t nmemb, void *ourpointer) {
+    string chunk((char *) ptr, size * nmemb);
+    XACARS::curl_received_data.append(chunk);
+    return chunk.length();
+}
+
+
+bool XACARS::SyncRequest(std::string url, std::string *response) {
+    
+    string query_url(url);
+    query_url.append(string("?data1=") + xacars_data1);
+    query_url.append(string("&data2=") + xacars_data2);
+    query_url.append(string("&data3=") + xacars_data3);
+    query_url.append(string("&data4=") + xacars_data4);
+    
+    string message = "openFDR: SyncRequest " + query_url;
     XPLMDebugString(message.c_str());
     
-    return true;
+    curl_received_data.erase();
+    curl_easy_reset(curl);
+    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, XACARS::curlDataHandler);
+    if (curl_easy_perform(curl) != CURLE_OK) {
+        return false;
+    }
 
-    
-    string rawresponse(buffer);
-    
-    int result = stoi(rawresponse.substr(0, rawresponse.find('|')));
-    *response = rawresponse.substr(rawresponse.find('|')+1, rawresponse.length());
+    int result = stoi(curl_received_data.substr(0, curl_received_data.find('|')));
+    *response = curl_received_data.substr(curl_received_data.find('|')+1, curl_received_data.length());
     
     return (result == 1);
 }
