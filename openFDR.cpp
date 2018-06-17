@@ -2,24 +2,12 @@
 #include <string.h>
 #include "XPLMProcessing.h"
 #include "XPLMUtilities.h"
-#include "XPLMMenus.h"
 #include "ui.h"
-#include "FDR.h"
 
 const int LOOP_INTERVAL_SECONDS = 1;
 
 int last_run = 0;
 FDR *fdr;
-
-void initMenus() {
-    XPLMMenuID    PluginMenu;
-    int           PluginSubMenuItem;
-    
-    // Create our menu
-    PluginSubMenuItem = XPLMAppendMenuItem(XPLMFindPluginsMenu(), "openFDR", NULL, 1);
-    PluginMenu = XPLMCreateMenu("openFDR menu", XPLMFindPluginsMenu(), PluginSubMenuItem, MenuHandler, NULL);
-    XPLMAppendMenuItem(PluginMenu, "Flight", (void *) +1, 1);
-}
 
 
 float FDRLoopCB(float elapsedMe, float elapsedSim, int counter, void *refCon)
@@ -38,9 +26,9 @@ PLUGIN_API int XPluginStart(
 	strcpy(outSig, "zonexecutive.openfdr");
 	strcpy(outDesc, "Flight Data Recorder plugin");
 
-    initMenus();
-    
     fdr = new FDR();
+    UI::initMenus();
+    UI::flight = fdr->flight;
 
     XPLMDebugString("openFDR: registering callback\n");
 

@@ -14,7 +14,6 @@
 class FDR
 {
 private:
-    Flight *flight;
     std::list<DataPoint> dataPoints;
     bool running;
 
@@ -26,6 +25,8 @@ private:
     int         aircraftNumberOfEngines = 0;
     
 public:
+    Flight *flight;
+    
     FDR();
     ~FDR();
     
