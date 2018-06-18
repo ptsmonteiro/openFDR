@@ -106,7 +106,12 @@ int UI::TextFieldHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long in
         flight->alternateICAO = string(buffer);
         
         XPGetWidgetDescriptor(inputCruiseAltitude, buffer, sizeof(buffer));
-        flight->cruiseAltitude = stoi(string(buffer));
+        try {
+            flight->cruiseAltitude = stoi(string(buffer));
+        }
+        catch(...) {
+            XPSetWidgetDescriptor(inputCruiseAltitude, to_string(flight->cruiseAltitude).c_str());
+        }
         
         XPGetWidgetDescriptor(inputRoute, buffer, sizeof(buffer));
         flight->route = string(buffer);
