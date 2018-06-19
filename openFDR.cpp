@@ -2,6 +2,7 @@
 #include <string.h>
 #include "XPLMProcessing.h"
 #include "XPLMUtilities.h"
+#include "XPLMPlugin.h"
 #include "ui.h"
 
 const int LOOP_INTERVAL_SECONDS = 1;
@@ -58,5 +59,9 @@ PLUGIN_API void XPluginReceiveMessage(
 					int				inMessage,
 					void *			inParam)
 {
-    
+    if (inMessage == XPLM_MSG_PLANE_LOADED) {
+        fdr->flight->planeLoaded();
+    }
+    int message = inMessage + 0;
+    printf("received message %d\n", message);
 }

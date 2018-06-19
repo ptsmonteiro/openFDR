@@ -22,17 +22,26 @@ public:
     int  aircraftMaxWeight = 0;
 
     string flightNumber = "";
-    string origionICAO = "";
+    string originICAO = "";
     string destinationICAO = "";
     string alternateICAO = "";
     int  cruiseAltitude = 0;
     string route = "";
     
-    string rules = "IFR";
+    string rules = "IFR"; // IFR/VFR
+    string eobt = "";
+    string eet = "";
+    string comments = "";
+    
+    string online = "";
+    string onlineID = "";
+    int pax = 0;
+    int cargoKg = 0;
     
     Flight();
     ~Flight();
     
     void toCSV(std::string);
     void reset();
+    void planeLoaded();
 };

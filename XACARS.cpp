@@ -97,7 +97,7 @@ bool XACARS::getFlightInfo(Flight *flight) {
     string buffer;
     istringstream rawresponse(response);
     
-    getline(rawresponse, flight->origionICAO);
+    getline(rawresponse, flight->originICAO);
     getline(rawresponse, flight->destinationICAO);
     getline(rawresponse, flight->alternateICAO);
     getline(rawresponse, flight->route);

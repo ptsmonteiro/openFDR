@@ -21,9 +21,12 @@ Flight::~Flight() {
 }
 
 void Flight::reset() {
-    char buffer[1024];
     simulatorVersion = readDataI("sim/version/xplane_internal_version");
-    
+    planeLoaded();
+}
+
+void Flight::planeLoaded() {
+    char buffer[1024];
     readDataB("sim/aircraft/view/acf_ICAO", buffer, sizeof(buffer));
     aircraftType = string(buffer);
     
@@ -55,7 +58,7 @@ void Flight::toCSV(std::string name) {
     outfile << ";";
     outfile << flightNumber;
     outfile << ";";
-    outfile << origionICAO;
+    outfile << originICAO;
     outfile << ";";
     outfile << destinationICAO;
     outfile << ";";

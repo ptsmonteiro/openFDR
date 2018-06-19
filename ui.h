@@ -10,8 +10,7 @@
 #include "FDR.h"
 
 const int BORDER_H = 10;
-const int BORDER_V = 30;
-const int LINE_SPACE   = 20;
+const int LINE_SPACE = 20;
 const int LINE_HEIGHT  = 12;
 
 class UI {
@@ -25,9 +24,25 @@ public:
     static XPWidgetID inputOriginICAO;
     static XPWidgetID inputDestinationICAO;
     static XPWidgetID inputAlternateICAO;
-    static XPWidgetID inputCruiseAltitude;
-    static XPWidgetID inputRoute;
+
+    static XPWidgetID inputAircraftType;
+    static XPWidgetID inputFlightRules;
+    static XPWidgetID inputEOBT;
+    static XPWidgetID inputEET;
     
+    static XPWidgetID inputRoute;
+    static XPWidgetID inputComment;
+
+    static XPWidgetID inputCruiseAltitude;
+    
+    static XPWidgetID inputOnline;
+    static XPWidgetID inputOnlineID;
+    static XPWidgetID inputPax;
+    static XPWidgetID inputCargo;
+
+    static XPWidgetID buttonFlightInfo;
+
+
     UI();
     ~UI();
 
