@@ -60,7 +60,6 @@ XPWidgetID UI::CreatePluginWindow(int x, int y, int w, int h)
     int xCol3 = xCol2 + 110;
     int xCol4 = xCol3 + 110;
     int xCol5 = xCol4 + 110;
-    int xCol6 = xCol5 + 110;
 
     int yLine1 = y - LINE_SPACE;
     int yLine2 = yLine1 - LINE_SPACE;

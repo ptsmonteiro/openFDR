@@ -6,6 +6,7 @@
 //
 
 #include <string>
+#include <ctime>
 #include <curl/curl.h>
 #include "DataPoint.h"
 #include "Flight.h"
@@ -31,6 +32,10 @@ private:
     int report_interval_sec;
 
     string formatRoute(string);
+    string formatDateTime(time_t);
+    string formatDurationFromSeconds(int);
+    string formatDegreesMinutes(float, bool);
+    string getFormattedLocation(float, float);
     
     bool SyncRequest(string url, string *response);
     void AsyncRequest(string url);
@@ -44,7 +49,7 @@ public:
 
     bool testConnection();
     bool getFlightInfo(Flight *);
-    void sendPIREP(string flightfile);
+    void sendPIREP(Flight *);
     void sendRecording(string flightfile, string datafile);
     void acarsReport(DataPoint *);
     void beginFlight(Flight *, DataPoint);

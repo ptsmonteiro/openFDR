@@ -266,25 +266,3 @@ std::string DataPoint::toCSV(bool headers = false) {
     
     return CSV.str();
 }
-
-string DataPoint::getXACARSFormattedLocation() {
-    // result should be like "N48 7.21916 E16 33.4283"
-    string result = "";
-
-    float degrees = 0;
-    float minutes = 0.0;
-    
-    // latitude
-    result.append(latitudeDeg > 0 ? "N" : "S");
-    minutes = modf(latitudeDeg, &degrees) * 60;
-    result.append(to_string((int) round(degrees)) + " " + to_string(minutes));
-
-    result.append(" ");
-
-    // longitude
-    result.append(longitudeDeg > 0 ? "E" : "W");
-    minutes = modf(longitudeDeg, &degrees) * 60;
-    result.append(to_string((int) round(degrees)) + " " + to_string(minutes));
-    
-    return result;
-}

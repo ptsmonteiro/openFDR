@@ -23,6 +23,7 @@ Flight::~Flight() {
 void Flight::reset() {
     simulatorVersion = readDataI("sim/version/xplane_internal_version");
     planeLoaded();
+    timeOut = getSimUnixTimestamp();
 }
 
 void Flight::planeLoaded() {

@@ -48,3 +48,18 @@ int readDataVI(const char *dataref, int *vector, int size) {
     readValues = XPLMGetDatavi(XPLMFindDataRef(dataref), vector, 0, size-1);
     return readValues;
 }
+
+float getSimUnixTimestamp() {
+    int localdays = readDataI("sim/time/local_date_days");
+    float zulu_time_secs = readDataF("sim/time/zulu_time_sec");
+    
+    time_t t;
+    time(&t);
+    
+    struct tm *timeinfo = gmtime(&t);
+    timeinfo->tm_mon = 1;
+    timeinfo->tm_mday += localdays;
+    t = mktime(timeinfo);
+    
+    return (t + zulu_time_secs);
+}

@@ -52,8 +52,8 @@ void FDR::update(float elapsedMe, float elapsedSim, int counter) {
 }
 
 bool FDR::AircraftOnGround() {
-    int h = round(readDataF("sim/flightmodel/position/y_agl"));
-    return h <= 0;
+    float gearForceY = readDataI("sim/flightmodel/forces/fnrml_gear");
+    return gearForceY > 0;
 }
 
 bool FDR::OneEngineRunning() {

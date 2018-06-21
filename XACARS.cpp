@@ -8,6 +8,7 @@
 #include "XACARS.h"
 #include <fstream>
 #include <string>
+#include <cmath>
 #include "XPLMUtilities.h"
 
 using namespace std;
@@ -147,7 +148,7 @@ void XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
     payload.append(flight->aircraftType + "|");
     payload.append("|");
     payload.append(formatRoute(flight->route) + "|");
-    payload.append(datapoint.getXACARSFormattedLocation() + "|");
+    payload.append(getFormattedLocation(datapoint.latitudeDeg, datapoint.longitudeDeg) + "|");
     payload.append(to_string(flight->cruiseAltitude) + "|");
     payload.append("|");
     payload.append("|");
@@ -172,7 +173,10 @@ void XACARS::endFlight() {
     AsyncRequest(acars_url);
 }
 
-void XACARS::sendPIREP(string flightfile) {
+void XACARS::sendPIREP(Flight *flight) {
+    xacars_data2 = "";
+    xacars_data3 = "";
+    xacars_data4 = "";
     /*
      DATA2 includes all the data necessary for the PIREP as fields separated by "~". In the following listing each field is a new line, but see the data example below how it really looks like:
      
@@ -214,6 +218,43 @@ void XACARS::sendPIREP(string flightfile) {
      
      pirep.php?DATA1=XACARS|1.1&DATA2=xactesting~ xactestingpass~ xac1001~ F100~ 24000~ IFR~ LOWW~ LOWI~ EDDM~ 01.07.2009 18:32~02:04~01:27~ 1980~ 1456~ 72~ 2100~VATSIM~ 123456719~ 123456729~ 123456739~ 123456749~ 22000~ 25000~ 23000~ N43 12.2810~ E18 12.3802~ 630~ N43 12.2810~ E18 12.3802~ 320~ 2347~ 3202~ 290~ 450
      */
+
+    xacars_data2 += username + "~";
+    xacars_data2 += password + "~";
+    xacars_data2 += flight->flightNumber + "~";
+    xacars_data2 += flight->aircraftType + "~";
+    xacars_data2 += to_string(flight->cruiseAltitude) + "~";
+    xacars_data2 += flight->rules + "~"
+    ;
+    xacars_data2 += flight->originICAO + "~";
+    xacars_data2 += flight->destinationICAO + "~";
+    xacars_data2 += flight->alternateICAO + "~";
+    
+    xacars_data2 += formatDateTime(flight->timeOut) + "~";
+    xacars_data2 += formatDurationFromSeconds((int) flight->timeIn - (int) flight->timeOut) + "~";
+    xacars_data2 += formatDurationFromSeconds((int) flight->timeOn - (int) flight->timeOff) + "~";
+    xacars_data2 += to_string(flight->pax) + "~";
+    xacars_data2 += to_string(flight->cargoKg) + "~"; // TODO this needs kg -> lbs conversion
+    xacars_data2 += flight->online + "~";
+    xacars_data2 += to_string(flight->timeOut) + "~";
+    xacars_data2 += to_string(flight->timeOff) + "~";
+    xacars_data2 += to_string(flight->timeOn) + "~";
+    xacars_data2 += to_string(flight->timeIn) + "~";
+    xacars_data2 += to_string(flight->zfw) + "~"; // TODO this needs kg -> lbs conversion
+    xacars_data2 += to_string(flight->tow) + "~"; // TODO this needs kg -> lbs conversion
+    xacars_data2 += to_string(flight->lw) + "~"; // TODO this needs kg -> lbs conversion
+    xacars_data2 += formatDegreesMinutes(flight->outLat, true) + "~";
+    xacars_data2 += formatDegreesMinutes(flight->outLong, false) + "~";
+    xacars_data2 += to_string(flight->outAlt) + "~";
+    xacars_data2 += formatDegreesMinutes(flight->inLat, true) + "~";
+    xacars_data2 += formatDegreesMinutes(flight->inLong, false) + "~";
+    xacars_data2 += to_string(flight->inAlt) + "~";
+    xacars_data2 += to_string(flight->maxClimb) + "~";
+    xacars_data2 += to_string(flight->maxDescent) + "~";
+    xacars_data2 += to_string(flight->maxIAS) + "~";
+    xacars_data2 += to_string(flight->maxGS) + "~";
+
+    AsyncRequest(pirep_url);
 }
 
 string XACARS::formatRoute(string route) {
@@ -222,3 +263,41 @@ string XACARS::formatRoute(string route) {
     return formatted;
 }
 
+string XACARS::formatDateTime(time_t t) {
+    char buffer[1024];
+    struct tm *timeinfo = gmtime(&t);
+    strftime(buffer, sizeof(buffer), "%d.%m.%Y %m.%s", timeinfo);
+    return string(buffer);
+}
+
+string XACARS::formatDurationFromSeconds(int s) {
+    int hours = floor(s / 3600);
+    int minutes = floor((s % 3600) / 60);
+    char buffer[8];
+    sprintf(buffer, "%2d:%2d", hours, minutes);
+    return string(buffer);
+}
+
+string XACARS::formatDegreesMinutes(float c, bool isLatitude) {
+    // result should be like "N48 7.21916" or "E16 33.4283"
+    string result = "";
+    
+    float degrees = 0;
+    float minutes = 0.0;
+
+    if (isLatitude) {
+        result.append(c > 0 ? "N" : "S");
+    }
+    else {
+        result.append(c > 0 ? "E" : "W");
+    }
+    minutes = modf(c, &degrees) * 60;
+    result.append(to_string((int) round(degrees)) + " " + to_string(minutes));
+    return result;
+}
+
+string XACARS::getFormattedLocation(float lon, float lat) {
+    // result should be like "N48 7.21916 E16 33.4283"
+    string result = formatDegreesMinutes(lat, true) + " " + formatDegreesMinutes(lon, false);
+    return result;
+}

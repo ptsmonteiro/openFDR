@@ -103,7 +103,5 @@ public:
     DataPoint(float);
     ~DataPoint();
     
-    std::string getXACARSFormattedLocation();
-    
     std::string toCSV(bool);
 };
