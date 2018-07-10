@@ -10,8 +10,11 @@
 #include <string>
 #include <cmath>
 #include "XPLMUtilities.h"
+#include "utitilies.h"
 
 using namespace std;
+
+const float LBS_TO_KGS = 0.45359237;
 
 string XACARS::curl_received_data;
 
@@ -112,7 +115,12 @@ bool XACARS::getFlightInfo(Flight *flight) {
     return true;
 }
 
-void XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
+bool XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
+    
+    if (!flight->flightPlanSet()) {
+        devConsole("XACARS comm: Unable to begin flight. Please set flight data.");
+        return false;
+    }
     
     xacars_data2 = "BEGINFLIGHT";
     xacars_data3 = "";
@@ -164,16 +172,29 @@ void XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
     xacars_data3 = payload;
     
     AsyncRequest(acars_url);
+    
+    flightStarted = true;
+    return true;
 }
 
 void XACARS::endFlight() {
+    if (!flightStarted) {
+        return;
+    }
+    
     xacars_data2 = "ENDFLIGHT";
     xacars_data3 = "";
     xacars_data4 = "";
     AsyncRequest(acars_url);
+    
+    flightStarted = false;
 }
 
 void XACARS::sendPIREP(Flight *flight) {
+    if (!flightStarted) {
+        return;
+    }
+    
     xacars_data2 = "";
     xacars_data3 = "";
     xacars_data4 = "";
@@ -224,8 +245,7 @@ void XACARS::sendPIREP(Flight *flight) {
     xacars_data2 += flight->flightNumber + "~";
     xacars_data2 += flight->aircraftType + "~";
     xacars_data2 += to_string(flight->cruiseAltitude) + "~";
-    xacars_data2 += flight->rules + "~"
-    ;
+    xacars_data2 += flight->rules + "~";
     xacars_data2 += flight->originICAO + "~";
     xacars_data2 += flight->destinationICAO + "~";
     xacars_data2 += flight->alternateICAO + "~";
@@ -255,6 +275,137 @@ void XACARS::sendPIREP(Flight *flight) {
     xacars_data2 += to_string(flight->maxGS) + "~";
 
     AsyncRequest(pirep_url);
+}
+
+void XACARS::acarsReportOut(Flight *flight, DataPoint dp) {
+    acarsReport(flight, dp, "QA");
+}
+
+void XACARS::acarsReportOff(Flight *flight, DataPoint dp) {
+    acarsReport(flight, dp, "QB");
+}
+
+void XACARS::acarsReportOn(Flight *flight, DataPoint dp) {
+    acarsReport(flight, dp, "QC");
+}
+
+void XACARS::acarsReportIn(Flight *flight, DataPoint dp) {
+    acarsReport(flight, dp, "QD");
+}
+
+void XACARS::acarsReportPosition(Flight *flight, DataPoint dp) {
+    if ((time(NULL) - last_report) <= report_interval_sec) return;
+    acarsReport(flight, dp, "PR");
+}
+
+void XACARS::acarsReportAltitude(Flight *flight, DataPoint dp) {
+    if ((time(NULL) - last_report) <= report_interval_sec) return;
+    acarsReport(flight, dp, "AR");
+}
+
+void XACARS::acarsReport(Flight *flight, DataPoint dp, string type) {
+    if (!flightStarted) {
+        return;
+    }
+    
+    char buffer[1024];
+    
+    /*
+     MESSAGE    pilotid|flightid
+     */
+    
+    xacars_data2 = "MESSAGE";
+    sprintf(buffer, "%s|%s", username.c_str(), flight->flightNumber.c_str());
+    xacars_data3 = string(buffer);
+
+    /*
+     Flightmessages are sent as part of the MESSAGE controlmessage in DATA4. Following messages are available:
+     
+     QA    OUT Message (engines are on and parking brakes are off)
+     QB    OFF Message (aicraft leaves the ground - takeoff)
+     QC    ON Message (aircraft reaches the ground again - landing)
+     QD    IN Message (aircraft has parking brake set and engines off)
+     PR    Position Report
+     AR    Altitude Report
+     In addition to those messages every flightmessage can containt one or more of this data:
+     
+     POS    Current position (format example: N11 24.9084 W69 40.7886)
+     HDG    Current heading (number)
+     ALT    Current altitude (number)
+     IAS    Current IAS (number)
+     TAS    Current TAT (number)
+     OAT    Current OAT (number)
+     TAT    Current TAT (number)
+     FOB    Fuel on board in lbs (number)
+     WND    Current wind (number, format example: 35010 = 350°, 10 kts)
+     HDT    Current track (number)
+     TOW    Take Off Weight in lbs (number)
+     
+     A typical DATA4 field for the controlmessage MESSAGE can look like this:
+     
+     [07/21/2006 10:16Z]
+     ACARS Mode: 2 Aircraft Reg: .N4110T
+     Msg Label: QD Block ID: 01 Msg No: M19A
+     Flight ID: XAC1001
+     Message:
+     IN 10:16Z /FOB 155 /RAW 2088
+     /POS N48 6.59843 E16 34.926
+     /ALT 602
+     /HDG 138
+     /HDT 136
+     /IAS 2
+     /WND 20805 /OAT 29
+     */
+
+    time_t tt = getSimUnixTimestamp();
+    struct tm *t = gmtime(&tt);
+    strftime(buffer, sizeof(buffer), "[%m/%d/%Y %H:%MZ]\n", t);
+    xacars_data4 = string(buffer);
+    
+    sprintf(buffer, "ACARS Mode: 2 Aircraft Reg: .%s\n", flight->aircraftRegistration.c_str());
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, "Msg Label: %s Block ID: 01 Msg No: M19A\n", type.c_str());
+    xacars_data4 += string(buffer);
+    
+    sprintf(buffer, "Flight ID: %s\n", flight->flightNumber.c_str());
+    xacars_data4 += string(buffer);
+
+    xacars_data4 += string("Message:\n");
+
+    strftime(buffer, sizeof(buffer), "%H:%MZ", t);
+    xacars_data4 += string("IN ") + string(buffer);
+    
+    sprintf(buffer, " /FOB %d", (int) round(dp.fuelQuantityKg / LBS_TO_KGS));
+    xacars_data4 += string(buffer);
+
+    // What is this RAW anyway??
+    sprintf(buffer, " /RAW %d", (int) round(dp.weightKg / LBS_TO_KGS));
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /POS %s", getFormattedLocation(dp.longitudeDeg, dp.latitudeDeg).c_str());
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /ALT %d", dp.altitudeFt);
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /HDG %d", dp.headingDeg);
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /HDT %d", dp.trackDeg);
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /IAS %d", dp.speedIAS);
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /WND %d%d", dp.windDeg, dp.windKt);
+    xacars_data4 += string(buffer);
+
+    sprintf(buffer, " /OAT %d", dp.oat);
+    xacars_data4 += string(buffer);
+
+    AsyncRequest(acars_url);
+    last_report = time(NULL);
 }
 
 string XACARS::formatRoute(string route) {

@@ -13,7 +13,13 @@ using namespace std;
 class Flight {
     
 public:
-    
+    static const int PHASE_RAMP = 0;
+    static const int PHASE_TAXI = 1;
+    static const int PHASE_CLIMB = 2;
+    static const int PHASE_CRUISE = 3;
+    static const int PHASE_DESCENT = 4;
+    static const int PHASE_LANDED = 5;
+
     int simulatorVersion = 0;
 
     string aircraftType = "";
@@ -63,12 +69,15 @@ public:
     int maxIAS = 0;
     int maxGS = 0;
     
+    int phase = PHASE_RAMP;
+    
     Flight();
     ~Flight();
     
     void toCSV(std::string);
     void reset();
     void planeLoaded();
+    bool flightPlanSet();
     
     string getFlightTime();
     string getBlockTime();

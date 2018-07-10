@@ -19,3 +19,5 @@ int readDataVF(const char *dataref, float *vector, int size);
 int readDataVI(const char *dataref, int *vector, int size);
 
 float getSimUnixTimestamp();
+void devConsole(string);
+

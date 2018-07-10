@@ -38,6 +38,13 @@ void Flight::planeLoaded() {
     aircraftMaxWeight = round(readDataF("sim/aircraft/weight/acf_m_max"));
 }
 
+bool Flight::flightPlanSet() {
+    if (flightNumber.empty()) return false;
+    if (aircraftType.empty()) return false;
+    if (originICAO.empty() || destinationICAO.empty()) return false;
+    return true;
+}
+
 void Flight::toCSV(std::string name) {
     using namespace std;
     

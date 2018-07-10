@@ -60,7 +60,7 @@ PLUGIN_API void XPluginReceiveMessage(
 					void *			inParam)
 {
     if (inMessage == XPLM_MSG_PLANE_LOADED) {
-        fdr->flight->planeLoaded();
+        fdr->planeLoaded();
     }
     int message = inMessage + 0;
     printf("received message %d\n", message);

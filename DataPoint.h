@@ -13,35 +13,35 @@ class DataPoint {
 
 public:
 
-    float flightTimeStamp;
+    float flightTimeStamp = 0;
     
     // flight data
-    int headingDeg;
+    int headingDeg = 0;
     
-    int heightFt;
-    int altitudeFt;
-    int verticalSpeedFPM;
+    int heightFt = 0;
+    int altitudeFt = 0;
+    int verticalSpeedFPM = 0;
 
-    int speedIAS;
-    float speedMach;
+    int speedIAS = 0;
+    float speedMach = 0;
 
-    float pitchDeg;
-    float bankDeg;
+    float pitchDeg = 0;
+    float bankDeg = 0;
     
-    float alpha;
-    float loadFactorG;
+    float alpha = 0;
+    float loadFactorG = 0;
     
     // navigation data
-    int trackDeg;
-    int speedGS;
+    int trackDeg = 0;
+    int speedGS = 0;
     
-    int windDeg;
-    int windKt;
+    int windDeg = 0;
+    int windKt = 0;
     
-    int oat;
+    int oat = 0;
     
-    float latitudeDeg;
-    float longitudeDeg;
+    float latitudeDeg = 0;
+    float longitudeDeg = 0;
         
     // engine
     int engineLever1 = 0;
@@ -63,42 +63,42 @@ public:
     int enginePower8 = 0;
 
     // brake
-    int brakeLeft;
-    int brakeRight;
-    int parkingBrake;
+    int brakeLeft = 0;
+    int brakeRight = 0;
+    int parkingBrake = 0;
     
-    bool gearLeverDown;
+    bool gearLeverDown = 0;
     
-    int pitchControl;
-    int rollControl;
-    int yawControl;
+    int pitchControl = 0;
+    int rollControl = 0;
+    int yawControl = 0;
 
     // control ratios
-    int flapLever;
-    int speedBrakeLever;
+    int flapLever = 0;
+    int speedBrakeLever = 0;
     
     // telemetry
-    bool autopilotOn;
+    bool autopilotOn = 0;
     
     // weights
-    int weightKg;
-    int fuelQuantityKg;
+    int weightKg = 0;
+    int fuelQuantityKg = 0;
     
     // cabin
-    int cabinAltFt;
-    int cabinVsFPM;
+    int cabinAltFt = 0;
+    int cabinVsFPM = 0;
     
     // Radio nav information
     char nav1Ident[4];
-    int nav1CourseDeg;
-    float nav1SlopeDeg;
-    float nav1DME;
-    float locDevDots;
-    float glideDevDots;
+    int nav1CourseDeg = 0;
+    float nav1SlopeDeg = 0;
+    float nav1DME = 0;
+    float locDevDots = 0;
+    float glideDevDots = 0;
     
     // VOR information TODO
     
-    float elapsedFlightTime;
+    float elapsedFlightTime = 0;
     
     DataPoint(float);
     ~DataPoint();

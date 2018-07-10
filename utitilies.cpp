@@ -63,3 +63,8 @@ float getSimUnixTimestamp() {
     
     return (t + zulu_time_secs);
 }
+
+void devConsole(string m) {
+    string message = "openFDR: " + m + "\n";
+    XPLMDebugString(message.c_str());
+}

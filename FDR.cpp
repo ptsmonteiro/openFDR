@@ -24,8 +24,37 @@ FDR::FDR() {
 FDR::~FDR() {
 }
 
+void FDR::planeLoaded() {
+    aircraftNumberOfEngines = readDataI("sim/aircraft/engine/acf_num_engines");
+    flight->planeLoaded();
+}
+
 bool FDR::simulatorIsPaused() {
     return (bool) readDataI("sim/time/paused");
+}
+
+void FDR::xacarsReport(int oldPhase, int newPhase) {
+    if (flight->phase == Flight::PHASE_CRUISE) {
+        xacars->acarsReportPosition(flight, getLastDatapoint());
+        return;
+    }
+    if (flight->phase == Flight::PHASE_CLIMB || flight->phase == Flight::PHASE_DESCENT) {
+        xacars->acarsReportAltitude(flight, getLastDatapoint());
+        return;
+    }
+
+    if (oldPhase == Flight::PHASE_RAMP && newPhase == Flight::PHASE_TAXI) {
+        xacars->acarsReportOut(flight, getLastDatapoint());
+    }
+    else if (oldPhase == Flight::PHASE_TAXI && newPhase == Flight::PHASE_CLIMB) {
+        xacars->acarsReportOff(flight, getLastDatapoint());
+    }
+    else if (oldPhase == Flight::PHASE_DESCENT && newPhase == Flight::PHASE_LANDED) {
+        xacars->acarsReportOn(flight, getLastDatapoint());
+    }
+    else if (oldPhase == Flight::PHASE_LANDED && newPhase == Flight::PHASE_RAMP) {
+        xacars->acarsReportIn(flight, getLastDatapoint());
+    }
 }
 
 void FDR::update(float elapsedMe, float elapsedSim, int counter) {
@@ -37,18 +66,20 @@ void FDR::update(float elapsedMe, float elapsedSim, int counter) {
         return;
     }
 
-    if (!aircraftNumberOfEngines) {
-        aircraftNumberOfEngines = readDataI("sim/aircraft/engine/acf_num_engines");
-    }
-    
     int flight_time = round(readDataF("sim/time/total_flight_time_sec"));
     runStatus(flight_time);
     if (!running) return;
-
+    
+    xacarsReport(flight->phase, updatePhase());
+    
     char buffer[1024];
     sprintf(buffer, "openFDR: recording data point at %ds\n", flight_time);
     XPLMDebugString(buffer);
     dataPoints.push_back(DataPoint(flight_time));
+}
+
+DataPoint FDR::getLastDatapoint() {
+    return dataPoints.empty() ? DataPoint(0) : dataPoints.back();
 }
 
 bool FDR::AircraftOnGround() {
@@ -95,7 +126,10 @@ void FDR::startFlight(int flightTime) {
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
     flight->reset();
-    xacars->beginFlight(flight, DataPoint(flightTime));
+    if (!xacars->beginFlight(flight, DataPoint(flightTime))) {
+        // TODO pop plugin window to remind user of missing flight data
+        devConsole("Unable to track flight. Please set flight data.");
+    }
 }
 
 void FDR::endFlight() {
@@ -103,6 +137,57 @@ void FDR::endFlight() {
     running = false;
     toCSV();
     xacars->endFlight();
+}
+
+int FDR::updatePhase() {
+    int oldPhase = flight->phase;
+    
+    if (flight->phase == Flight::PHASE_RAMP) {
+        if (OneEngineRunning() && !AircraftStopped()) {
+            flight->phase = Flight::PHASE_TAXI;
+        }
+    }
+    else if (flight->phase == Flight::PHASE_TAXI) {
+        if (getLastDatapoint().verticalSpeedFPM > 100 && getLastDatapoint().heightFt >= 50) {
+            flight->phase = Flight::PHASE_CLIMB;
+        }
+        else if (AircraftOnGround() && AircraftStopped() && !OneEngineRunning() ) {
+            flight->phase = Flight::PHASE_RAMP;
+        }
+    }
+    else if (flight->phase == Flight::PHASE_CLIMB) {
+        if (abs(getLastDatapoint().verticalSpeedFPM) < 100) {
+            flight->phase = Flight::PHASE_CRUISE;
+        }
+        else if(getLastDatapoint().verticalSpeedFPM < -100) {
+            flight->phase = Flight::PHASE_DESCENT;
+        }
+    }
+    else if (flight->phase == Flight::PHASE_CRUISE) {
+        if (getLastDatapoint().verticalSpeedFPM > 100) {
+            flight->phase = Flight::PHASE_CLIMB;
+        }
+        else if (getLastDatapoint().verticalSpeedFPM < -100) {
+            flight->phase = Flight::PHASE_DESCENT;
+        }
+    }
+    else if (flight->phase == Flight::PHASE_DESCENT) {
+        if (AircraftOnGround()) {
+            flight->phase = Flight::PHASE_LANDED;
+        }
+    }
+    else if (flight->phase == Flight::PHASE_LANDED) {
+        if (AircraftOnGround() && !OneEngineRunning() && AircraftStopped()) {
+            flight->phase = Flight::PHASE_RAMP;
+        }
+    }
+    if (oldPhase != flight->phase) {
+        char buffer[1024] = "";
+        sprintf(buffer, "Flight phase changed %d -> %d)", oldPhase, flight->phase);
+        devConsole(string(buffer));
+        xacarsReport(oldPhase, flight->phase);
+    }
+    return flight->phase;
 }
 
 void FDR::toCSV() {

@@ -14,15 +14,16 @@
 class FDR
 {
 private:
+
     std::list<DataPoint> dataPoints;
     bool running;
-
-    XACARS      *xacars;
     
+    XACARS      *xacars;
     Config      config;
     
-    bool        aircraftHasRetrLandingGear;
     int         aircraftNumberOfEngines = 0;
+
+    DataPoint getLastDatapoint();
     
 public:
     Flight *flight;
@@ -32,11 +33,15 @@ public:
     
     bool simulatorIsPaused();
     void update(float, float, int);
+    int updatePhase();
+    void xacarsReport(int, int);
     void startFlight(int);
     void endFlight();
+    void planeLoaded();
     bool runStatus(int);
     bool AircraftStopped();
     bool AircraftOnGround();
     bool OneEngineRunning();
     void toCSV();
+    
 };
