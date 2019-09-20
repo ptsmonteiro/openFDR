@@ -80,11 +80,11 @@ XPWidgetID UI::CreatePluginWindow(int x, int y, int w, int h)
     XPCreateWidget(xx, yy, xx + 40, yy - LINE_HEIGHT, 1, "Route", 0, window, xpWidgetClass_Caption);
     xx += 40 + 10;
     inputRoute = XPCreateWidget(xx, yy - 2, x2 - BORDER_H, yy - LINE_HEIGHT - 2, 1, "", 0, window, xpWidgetClass_TextField);
-    XPAddWidgetCallback(inputRoute, TextFieldHandler);
+    XPAddWidgetCallback(inputRoute, (XPWidgetFunc_t) TextFieldHandler);
     XPSetWidgetProperty(UI::inputRoute, xpProperty_TextFieldType, xpTextEntryField);
     
     // Register our widget handler
-    XPAddWidgetCallback(window, PluginWindowHandler);
+    XPAddWidgetCallback(window, (XPWidgetFunc_t) PluginWindowHandler);
     
     return window;
 }

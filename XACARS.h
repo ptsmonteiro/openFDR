@@ -6,7 +6,17 @@
 //
 
 #include <string>
-#include <curl/curl.h>
+
+/*
+#if APL
+	#include <curl/curl.h>
+#elif IBM
+	#include "curl.h"
+#else
+	#error "Platform not tested!"
+#endif
+*/
+
 #include "DataPoint.h"
 #include "Flight.h"
 #include "Config.h"
@@ -16,7 +26,7 @@ using namespace std;
 class XACARS {
 private:
     
-    CURL *curl;
+    //CURL *curl;
     
     string xacars_data1;
     string xacars_data2;
@@ -32,8 +42,8 @@ private:
 
     string formatRoute(string);
     
-    bool SyncRequest(string url, string *response);
-    void AsyncRequest(string url);
+    //bool SyncRequest(string url, string *response);
+    //void AsyncRequest(string url);
     
 public:
     XACARS(Config *);

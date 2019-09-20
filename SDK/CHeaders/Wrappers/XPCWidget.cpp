@@ -23,7 +23,7 @@ XPCWidget::XPCWidget(
 		inClass);
 
 	XPSetWidgetProperty(mWidget, xpProperty_Object, reinterpret_cast<long>(this));		
-	XPAddWidgetCallback(mWidget, WidgetCallback);
+	XPAddWidgetCallback(mWidget, (XPWidgetFunc_t) WidgetCallback);
 }								
 						
 XPCWidget::XPCWidget(
@@ -34,7 +34,7 @@ XPCWidget::XPCWidget(
 	mOwnsWidget(inOwnsWidget)
 {
 	XPSetWidgetProperty(mWidget, xpProperty_Object, reinterpret_cast<long>(this));		
-	XPAddWidgetCallback(mWidget, WidgetCallback);
+	XPAddWidgetCallback(mWidget, (XPWidgetFunc_t) WidgetCallback);
 }
 
 XPCWidget::~XPCWidget()

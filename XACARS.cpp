@@ -12,7 +12,7 @@
 
 using namespace std;
 
-string XACARS::curl_received_data;
+//string XACARS::curl_received_data;
 
 XACARS::XACARS(Config *config) {
     xacars_data1 = "XACARS|1.1";
@@ -23,93 +23,93 @@ XACARS::XACARS(Config *config) {
     username = config->xacars_username;
     password = config->xacars_password;
     
-    curl = curl_easy_init();
+    //curl = curl_easy_init();
 }
 
-XACARS::~XACARS() {
-    curl_easy_cleanup(curl);
-}
-
-size_t XACARS::curlDataHandler(void *ptr, size_t size, size_t nmemb, void *ourpointer) {
-    string chunk((char *) ptr, size * nmemb);
-    XACARS::curl_received_data.append(chunk);
-    return chunk.length();
-}
-
-
-bool XACARS::SyncRequest(std::string url, std::string *response) {
-    
-    string query_url(url);
-    query_url.append(string("?data1=") + xacars_data1);
-    query_url.append(string("&data2=") + xacars_data2);
-    query_url.append(string("&data3=") + xacars_data3);
-    query_url.append(string("&data4=") + xacars_data4);
-    
-    string message = "openFDR: SyncRequest request: " + query_url;
-    XPLMDebugString(message.c_str());
-    
-    curl_received_data.erase();
-    curl_easy_reset(curl);
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, XACARS::curlDataHandler);
-    if (curl_easy_perform(curl) != CURLE_OK) {
-        return false;
-    }
-
-    message = "openFDR: SyncRequest received: " + curl_received_data;
-    XPLMDebugString(message.c_str());
-    
-    int result = stoi(curl_received_data.substr(0, curl_received_data.find('|')));
-    *response = curl_received_data.substr(curl_received_data.find('|')+1, curl_received_data.length());
-    
-    return (result == 1);
-}
-
-void XACARS::AsyncRequest(std::string url) {
-    //http url async request
-
-    string message = "openFDR: AsyncRequest: ";
-    message.append(string("data1: ") + xacars_data1 + ", ");
-    message.append(string("data2: ") + xacars_data2 + ", ");
-    message.append(string("data3: ") + xacars_data3 + ", ");
-    message.append(string("data4: ") + xacars_data4 + "\n");
-    XPLMDebugString(message.c_str());
-}
-
-bool XACARS::testConnection() {
-    xacars_data2 = "TEST";
-    xacars_data3 = username;
-    xacars_data4 = "";
-
-    return SyncRequest(acars_url, NULL);
-}
-
-bool XACARS::getFlightInfo(Flight *flight) {
-    xacars_data2 = flight->flightNumber;
-    xacars_data3 = "";
-    xacars_data4 = "";
-    
-    string response;
-    if (!SyncRequest(flight_info_url, &response)) {
-        return false;
-    }
-
-    string buffer;
-    istringstream rawresponse(response);
-    
-    getline(rawresponse, flight->origionICAO);
-    getline(rawresponse, flight->destinationICAO);
-    getline(rawresponse, flight->alternateICAO);
-    getline(rawresponse, flight->route);
-    getline(rawresponse, buffer); // max pax
-    getline(rawresponse, buffer); // max cargo
-    getline(rawresponse, buffer); // IFR/VFR
-    getline(rawresponse, flight->aircraftRegistration);
-    getline(rawresponse, buffer); // cruise altitude
-    flight->cruiseAltitude = stoi(buffer);
-
-    return true;
-}
+//XACARS::~XACARS() {
+//    curl_easy_cleanup(curl);
+//}
+//
+//size_t XACARS::curlDataHandler(void *ptr, size_t size, size_t nmemb, void *ourpointer) {
+//    string chunk((char *) ptr, size * nmemb);
+//    XACARS::curl_received_data.append(chunk);
+//    return chunk.length();
+//}
+//
+//
+//bool XACARS::SyncRequest(std::string url, std::string *response) {
+//    
+//    string query_url(url);
+//    query_url.append(string("?data1=") + xacars_data1);
+//    query_url.append(string("&data2=") + xacars_data2);
+//    query_url.append(string("&data3=") + xacars_data3);
+//    query_url.append(string("&data4=") + xacars_data4);
+//    
+//    string message = "openFDR: SyncRequest request: " + query_url;
+//    XPLMDebugString(message.c_str());
+//    
+//    curl_received_data.erase();
+//    curl_easy_reset(curl);
+//    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+//    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, XACARS::curlDataHandler);
+//    if (curl_easy_perform(curl) != CURLE_OK) {
+//        return false;
+//    }
+//
+//    message = "openFDR: SyncRequest received: " + curl_received_data;
+//    XPLMDebugString(message.c_str());
+//    
+//    int result = stoi(curl_received_data.substr(0, curl_received_data.find('|')));
+//    *response = curl_received_data.substr(curl_received_data.find('|')+1, curl_received_data.length());
+//    
+//    return (result == 1);
+//}
+//
+//void XACARS::AsyncRequest(std::string url) {
+//    //http url async request
+//
+//    string message = "openFDR: AsyncRequest: ";
+//    message.append(string("data1: ") + xacars_data1 + ", ");
+//    message.append(string("data2: ") + xacars_data2 + ", ");
+//    message.append(string("data3: ") + xacars_data3 + ", ");
+//    message.append(string("data4: ") + xacars_data4 + "\n");
+//    XPLMDebugString(message.c_str());
+//}
+//
+//bool XACARS::testConnection() {
+//    xacars_data2 = "TEST";
+//    xacars_data3 = username;
+//    xacars_data4 = "";
+//
+//    return SyncRequest(acars_url, NULL);
+//}
+//
+//bool XACARS::getFlightInfo(Flight *flight) {
+//    xacars_data2 = flight->flightNumber;
+//    xacars_data3 = "";
+//    xacars_data4 = "";
+//    
+//    string response;
+//    if (!SyncRequest(flight_info_url, &response)) {
+//        return false;
+//    }
+//
+//    string buffer;
+//    istringstream rawresponse(response);
+//    
+//    getline(rawresponse, flight->origionICAO);
+//    getline(rawresponse, flight->destinationICAO);
+//    getline(rawresponse, flight->alternateICAO);
+//    getline(rawresponse, flight->route);
+//    getline(rawresponse, buffer); // max pax
+//    getline(rawresponse, buffer); // max cargo
+//    getline(rawresponse, buffer); // IFR/VFR
+//    getline(rawresponse, flight->aircraftRegistration);
+//    getline(rawresponse, buffer); // cruise altitude
+//    flight->cruiseAltitude = stoi(buffer);
+//
+//    return true;
+//}
 
 void XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
     
@@ -162,14 +162,14 @@ void XACARS::beginFlight(Flight *flight, DataPoint datapoint) {
     
     xacars_data3 = payload;
     
-    AsyncRequest(acars_url);
+    //AsyncRequest(acars_url);
 }
 
 void XACARS::endFlight() {
     xacars_data2 = "ENDFLIGHT";
     xacars_data3 = "";
     xacars_data4 = "";
-    AsyncRequest(acars_url);
+    //AsyncRequest(acars_url);
 }
 
 void XACARS::sendPIREP(string flightfile) {
@@ -218,7 +218,8 @@ void XACARS::sendPIREP(string flightfile) {
 
 string XACARS::formatRoute(string route) {
     string formatted(route);
-    replace(formatted.begin(), formatted.end(), ' ', '~');
+	// TODO do this for both platforms
+    //replace(formatted.begin(), formatted.end(), ' ', '~');
     return formatted;
 }
 

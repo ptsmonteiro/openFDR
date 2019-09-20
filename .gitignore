@@ -2,4 +2,9 @@ Build
 Index
 openFDR.xcodeproj
 .DS_Store
+x64
+*.vcx*
+*.sln
+.vs
+Debug
 
