@@ -75,6 +75,7 @@
     <ClCompile Include="FDR.cpp" />
     <ClCompile Include="Flight.cpp" />
     <ClCompile Include="openFDR.cpp" />
+    <ClCompile Include="TCPServer.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="utitilies.cpp" />
   </ItemGroup>
@@ -106,6 +107,7 @@
     <ClInclude Include="sdk\cheaders\xplm\XPLMProcessing.h" />
     <ClInclude Include="sdk\cheaders\xplm\XPLMScenery.h" />
     <ClInclude Include="sdk\cheaders\xplm\XPLMUtilities.h" />
+    <ClInclude Include="TCPServer.h" />
     <ClInclude Include="ui.h" />
     <ClInclude Include="utitilies.h" />
     <ClInclude Include="XACARS.h" />

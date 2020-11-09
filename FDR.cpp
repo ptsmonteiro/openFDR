@@ -125,3 +125,12 @@ void FDR::toCSV() {
     for (DataPoint dp : dataPoints) outfile << dp.toCSV(false);
     outfile.close();
 }
+
+std::string FDR::getLastDataPoint() {
+	if (dataPoints.size() > 0) {
+		return dataPoints.back().toCSV(false);
+	}
+	else {
+		return "";
+	}
+}

@@ -40,4 +40,6 @@ public:
     bool AircraftOnGround();
     bool OneEngineRunning();
     void toCSV();
+
+	std::string getLastDataPoint();
 };
