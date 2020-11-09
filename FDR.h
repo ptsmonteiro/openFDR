@@ -9,7 +9,9 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "XACARS.h"
+#include "DataPoint.h"
+#include "Config.h"
+#include "Flight.h"
 
 class FDR
 {
@@ -17,7 +19,6 @@ private:
     std::list<DataPoint> dataPoints;
     bool running;
 
-    XACARS      *xacars;
     
     Config      config;
     

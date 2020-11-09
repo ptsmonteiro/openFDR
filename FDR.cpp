@@ -18,7 +18,6 @@ FDR::FDR() {
     running = false;
     flight = new Flight();
     config.Load();
-    xacars = new XACARS(&config);
 }
 
 FDR::~FDR() {
@@ -95,14 +94,12 @@ void FDR::startFlight(int flightTime) {
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
     flight->reset();
-    xacars->beginFlight(flight, DataPoint(flightTime));
 }
 
 void FDR::endFlight() {
     XPLMDebugString("openFDR: Stopping recording.\n");
     running = false;
     toCSV();
-    xacars->endFlight();
 }
 
 void FDR::toCSV() {
