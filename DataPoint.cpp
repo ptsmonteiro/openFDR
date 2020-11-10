@@ -33,6 +33,7 @@ DataPoint::DataPoint(float elapsed) {
 
 	// time     
     elapsedFlightTime = elapsed;
+	totalFlightTimeSec = readDataF("sim/time/total_flight_time_sec");
     flightTimeStamp = readDataF("sim/time/zulu_time_sec");
     
     // flight data
@@ -138,6 +139,7 @@ string DataPoint::toJSON() {
 
 	// time
 	buffer << "\"elapsedFlightTime\": " << elapsedFlightTime << "," << std::endl;
+	buffer << "\"totalFlightTimeSec\": " << totalFlightTimeSec << "," << std::endl;
 	buffer << "\"flightTimeStamp\": " << flightTimeStamp << "," << std::endl;
 
 	// flight and navigation

@@ -23,6 +23,8 @@ public:
 	int aircraftEmptyWeightKg;
 	int aircraftMaxWeightKg;
 
+	float elapsedFlightTime;
+	float totalFlightTimeSec;
     float flightTimeStamp;
     
     // flight data
@@ -93,9 +95,7 @@ public:
     float glideDevDots;
     
     // VOR information TODO
-    
-    float elapsedFlightTime;
-    
+        
     DataPoint(float);
     ~DataPoint();
     
