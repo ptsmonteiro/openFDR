@@ -1,5 +1,5 @@
 //
-//  utitilies.hpp
+//  utilities.h
 //  openFDR
 //
 //  Created by Pedro on 16/04/2018.

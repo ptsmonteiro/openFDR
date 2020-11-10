@@ -21,16 +21,13 @@
     <ClCompile Include="DataPoint.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FDR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="openFDR.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="utitilies.cpp">
+    <ClCompile Include="TCPServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TCPServer.cpp">
+    <ClCompile Include="utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -39,12 +36,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DataPoint.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FDR.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="utitilies.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="XACARS.h">
@@ -120,6 +111,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TCPServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="utilities.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

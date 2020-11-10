@@ -1,22 +1,26 @@
 #include "TCPServer.h"
-#include "FDR.h"
+#include "DataPoint.h"
+#include "utilities.h"
 #include "XPLMProcessing.h"
 #include "XPLMUtilities.h"
 
 const int LOOP_INTERVAL_SECONDS = 1;
 
 int last_run = 0;
-FDR *fdr = NULL;
 TCPServer *server = NULL;
 
 
 float FDRLoopCB(float elapsedMe, float elapsedSim, int counter, void *refCon)
 {
-	DataPoint* data;
-    data = fdr->update(elapsedMe, elapsedSim, counter);
-	if (data) {
-		server->transmit(data->toJSON());
+	DataPoint* dp;
+
+	if (readDataI("sim/time/paused") || elapsedSim < 1 || readDataI("sim/operation/prefs/replay_mode")) {
+		return LOOP_INTERVAL_SECONDS;
 	}
+
+	dp = new DataPoint(elapsedSim);
+	server->transmit(dp->toJSON());
+	delete dp;
     return LOOP_INTERVAL_SECONDS;
 }
 
@@ -29,8 +33,6 @@ PLUGIN_API int XPluginStart(
 	strcpy(outName, "openFDR");
 	strcpy(outSig, "zonexecutive.openfdr");
 	strcpy(outDesc, "Flight Data Recorder plugin");
-
-    fdr = new FDR();
 
 	server = new TCPServer();
 	server->start();
@@ -45,7 +47,6 @@ PLUGIN_API void	XPluginStop(void)
 {
     XPLMDebugString("openFDR: stopping\n");
     XPLMUnregisterFlightLoopCallback(FDRLoopCB, NULL);
-    delete fdr;
 	server->stop();
 }
 

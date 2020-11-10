@@ -7,7 +7,6 @@
 
 #include "Config.h"
 #include "XPLMPlugin.h"
-//#include "XPLMUtilities.h"
 #include <stdio.h>
 #include <string>
 #include <fstream>

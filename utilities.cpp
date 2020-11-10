@@ -1,5 +1,5 @@
 //
-//  utitilies.cpp
+//  utilities.cpp
 //  openFDR
 //
 //  Created by Pedro on 16/04/2018.
@@ -7,7 +7,7 @@
 
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
-#include "utitilies.h"
+#include "utilities.h"
 
 int readDataI(const char *dataref){
     int value = 0;

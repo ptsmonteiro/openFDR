@@ -9,7 +9,7 @@
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
 #include "DataPoint.h"
-#include "utitilies.h"
+#include "utilities.h"
 
 using namespace std;
 
@@ -22,6 +22,8 @@ DataPoint::DataPoint(float elapsed) {
 
 	readDataB("sim/aircraft/view/acf_ICAO", bytes, sizeof(bytes));
 	aircraftType = string(bytes);
+
+	aircraftNumberOfEngines = readDataI("sim/aircraft/engine/acf_num_engines");
 
 	readDataB("sim/aircraft/view/acf_tailnum", bytes, sizeof(bytes));
 	aircraftRegistration = string(bytes);
@@ -65,30 +67,21 @@ DataPoint::DataPoint(float elapsed) {
     oat = round(readDataF("sim/cockpit2/temperature/outside_air_temp_degc"));
 
     // engines
+	readDataVI("sim/flightmodel/engine/ENGN_running", engineRunning, 8);
     
     float tr_engines[8];
     readDataVF("sim/flightmodel/engine/ENGN_thro", tr_engines, 8);
-    engineLever1 = round(tr_engines[0] * 100);
-    engineLever2 = round(tr_engines[1] * 100);
-    engineLever3 = round(tr_engines[2] * 100);
-    engineLever4 = round(tr_engines[3] * 100);
-    engineLever5 = round(tr_engines[4] * 100);
-    engineLever6 = round(tr_engines[5] * 100);
-    engineLever7 = round(tr_engines[6] * 100);
-    engineLever8 = round(tr_engines[7] * 100);
+	for (int i = 0; i < aircraftNumberOfEngines; i++) {
+		engineLever[i] = round(tr_engines[i] * 100);
+	}
 
     // engine power
     float pwr_engines[8];
     readDataVF("sim/cockpit2/engine/indicators/power_watts", pwr_engines, 8);
-    enginePower1 = round(pwr_engines[0]);
-    enginePower2 = round(pwr_engines[1]);
-    enginePower3 = round(pwr_engines[2]);
-    enginePower4 = round(pwr_engines[3]);
-    enginePower5 = round(pwr_engines[4]);
-    enginePower6 = round(pwr_engines[5]);
-    enginePower7 = round(pwr_engines[6]);
-    enginePower8 = round(pwr_engines[7]);
-    
+	for (int i = 0; i < aircraftNumberOfEngines; i++) {
+		enginePowerWatt[i] = round(pwr_engines[i]);
+	}
+
     brakeLeft = round(readDataF("sim/cockpit2/controls/left_brake_ratio") * 100);
     brakeRight = round(readDataF("sim/cockpit2/controls/right_brake_ratio") * 100);
     parkingBrake = round(readDataF("sim/cockpit2/controls/parking_brake_ratio") * 100);
@@ -133,10 +126,12 @@ DataPoint::~DataPoint() {
 string DataPoint::toJSON() {
 
 	stringstream buffer;
+	int i = 0;
 
 	// properties
 	buffer << "\"simulatorVersion\": " << simulatorVersion << "," << std::endl;
 	buffer << "\"aircraftType\": \"" << aircraftType << "\"," << std::endl;
+	buffer << "\"aircraftNumberOfEngines\": " << aircraftNumberOfEngines << "," << std::endl;
 	buffer << "\"aircraftRegistration\": \"" << aircraftRegistration << "\"," << std::endl;
 	buffer << "\"aircraftEmptyWeightKg\": " << aircraftEmptyWeightKg << "," << std::endl;
 	buffer << "\"aircraftMaxWeightKg\": " << aircraftMaxWeightKg << "," << std::endl;
@@ -167,24 +162,27 @@ string DataPoint::toJSON() {
 	buffer << "\"oat\": " << oat << "," << std::endl;
 
 	// engines
-	buffer << "\"engineLever1\": " << engineLever1 << "," << std::endl;
-	buffer << "\"engineLever2\": " << engineLever2 << "," << std::endl;
-	buffer << "\"engineLever3\": " << engineLever3 << "," << std::endl;
-	buffer << "\"engineLever4\": " << engineLever4 << "," << std::endl;
-	buffer << "\"engineLever5\": " << engineLever5 << "," << std::endl;
-	buffer << "\"engineLever6\": " << engineLever6 << "," << std::endl;
-	buffer << "\"engineLever7\": " << engineLever7 << "," << std::endl;
-	buffer << "\"engineLever8\": " << engineLever8 << "," << std::endl;
 
-	// engine power
-	buffer << "\"enginePower1\": " << enginePower1 << "," << std::endl;
-	buffer << "\"enginePower2\": " << enginePower2 << "," << std::endl;
-	buffer << "\"enginePower3\": " << enginePower3 << "," << std::endl;
-	buffer << "\"enginePower4\": " << enginePower4 << "," << std::endl;
-	buffer << "\"enginePower5\": " << enginePower5 << "," << std::endl;
-	buffer << "\"enginePower6\": " << enginePower6 << "," << std::endl;
-	buffer << "\"enginePower7\": " << enginePower7 << "," << std::endl;
-	buffer << "\"enginePower8\": " << enginePower8 << "," << std::endl;
+	// running
+	buffer << "\"engineRunning\": [";
+	for (i = 0; i < aircraftNumberOfEngines-1; i++) {
+		buffer << engineRunning[i] << ", ";
+	}
+	buffer << engineRunning[i] << "]" << std::endl;
+
+	// thrust lever
+	buffer << "\"engineLever\": [";
+	for (i = 0; i < aircraftNumberOfEngines - 1; i++) {
+		buffer << engineLever[i] << ", ";
+	}
+	buffer << engineLever[i] << "]" << std::endl;
+
+	// power
+	buffer << "\"enginePowerWatt\": [";
+	for (i = 0; i < aircraftNumberOfEngines - 1; i++) {
+		buffer << enginePowerWatt[i] << ", ";
+	}
+	buffer << enginePowerWatt[i] << "]" << std::endl;
 
 	// brakes
 	buffer << "\"brakeLeft\": " << brakeLeft << "," << std::endl;

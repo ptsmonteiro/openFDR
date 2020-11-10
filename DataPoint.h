@@ -18,6 +18,7 @@ public:
 	// properties
 	int simulatorVersion;
 	string aircraftType;
+	int aircraftNumberOfEngines;
 	string aircraftRegistration;
 	int aircraftEmptyWeightKg;
 	int aircraftMaxWeightKg;
@@ -53,25 +54,11 @@ public:
     float longitudeDeg;
         
     // engine
-    int engineLever1 = 0;
-    int engineLever2 = 0;
-    int engineLever3 = 0;
-    int engineLever4 = 0;
-    int engineLever5 = 0;
-    int engineLever6 = 0;
-    int engineLever7 = 0;
-    int engineLever8 = 0;
+	int engineRunning[8];
+	int engineLever[8];
+	int enginePowerWatt[8];
 
-    int enginePower1 = 0;
-    int enginePower2 = 0;
-    int enginePower3 = 0;
-    int enginePower4 = 0;
-    int enginePower5 = 0;
-    int enginePower6 = 0;
-    int enginePower7 = 0;
-    int enginePower8 = 0;
-
-    // brake
+	// brake
     int brakeLeft;
     int brakeRight;
     int parkingBrake;
