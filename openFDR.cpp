@@ -1,7 +1,7 @@
 #include "TCPServer.h"
+#include "FDR.h"
 #include "XPLMProcessing.h"
 #include "XPLMUtilities.h"
-#include "ui.h"
 
 const int LOOP_INTERVAL_SECONDS = 1;
 
@@ -12,8 +12,11 @@ TCPServer *server = NULL;
 
 float FDRLoopCB(float elapsedMe, float elapsedSim, int counter, void *refCon)
 {
-    fdr->update(elapsedMe, elapsedSim, counter);
-	server->transmit(fdr->getLastDataPoint());
+	DataPoint* data;
+    data = fdr->update(elapsedMe, elapsedSim, counter);
+	if (data) {
+		server->transmit(data->toJSON());
+	}
     return LOOP_INTERVAL_SECONDS;
 }
 
@@ -28,8 +31,6 @@ PLUGIN_API int XPluginStart(
 	strcpy(outDesc, "Flight Data Recorder plugin");
 
     fdr = new FDR();
-    UI::initMenus();
-    UI::flight = fdr->flight;
 
 	server = new TCPServer();
 	server->start();

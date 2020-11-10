@@ -11,7 +11,6 @@
 #include <list>
 #include "DataPoint.h"
 #include "Config.h"
-#include "Flight.h"
 
 class FDR
 {
@@ -26,20 +25,17 @@ private:
     int         aircraftNumberOfEngines = 0;
     
 public:
-    Flight *flight;
-    
     FDR();
     ~FDR();
     
     bool simulatorIsPaused();
-    void update(float, float, int);
+    DataPoint* update(float, float, int);
     void startFlight(int);
     void endFlight();
     bool runStatus(int);
     bool AircraftStopped();
     bool AircraftOnGround();
     bool OneEngineRunning();
-    void toCSV();
 
-	std::string getLastDataPoint();
+	DataPoint* getLastDataPoint();
 };

@@ -16,7 +16,6 @@
 
 FDR::FDR() {
     running = false;
-    flight = new Flight();
     config.Load();
 }
 
@@ -27,13 +26,13 @@ bool FDR::simulatorIsPaused() {
     return (bool) readDataI("sim/time/paused");
 }
 
-void FDR::update(float elapsedMe, float elapsedSim, int counter) {
+DataPoint* FDR::update(float elapsedMe, float elapsedSim, int counter) {
     if (simulatorIsPaused() || elapsedSim < 1) {
-        return;
+        return NULL;
     }
     
     if (readDataI("sim/operation/prefs/replay_mode")) {
-        return;
+        return NULL;
     }
 
     if (!aircraftNumberOfEngines) {
@@ -42,12 +41,14 @@ void FDR::update(float elapsedMe, float elapsedSim, int counter) {
     
     int flight_time = round(readDataF("sim/time/total_flight_time_sec"));
     runStatus(flight_time);
-    if (!running) return;
+    if (!running) return NULL;
 
     char buffer[1024];
     sprintf(buffer, "openFDR: recording data point at %ds\n", flight_time);
     XPLMDebugString(buffer);
     dataPoints.push_back(DataPoint(flight_time));
+
+	return &dataPoints.back();
 }
 
 bool FDR::AircraftOnGround() {
@@ -93,44 +94,18 @@ bool FDR::runStatus(int flightTime) {
 void FDR::startFlight(int flightTime) {
     XPLMDebugString("openFDR: Starting recording.\n");
     running = true;
-    flight->reset();
 }
 
 void FDR::endFlight() {
     XPLMDebugString("openFDR: Stopping recording.\n");
     running = false;
-    toCSV();
 }
 
-void FDR::toCSV() {
-    char timestamp[100];
-    std::time_t t = std::time(nullptr);
-    std:strftime(timestamp, sizeof(timestamp), "%Y%m%d%H%M", std::gmtime(&t));
-
-    char flightname[1024];
-    sprintf(flightname, "%s.%s", flight->aircraftType.c_str(), timestamp);
-    
-    char filename[1024];
-    sprintf(filename, "%s.openfdr.data.csv", flightname);
-    
-    char message[1024];
-    sprintf(message, "openFDR: Writing data for flight %s\n", flightname);
-    XPLMDebugString(message);
-
-    flight->toCSV(std::string(flightname));
-    
-    std::ofstream outfile;
-    outfile.open(filename);
-    outfile << dataPoints.front().toCSV(true);
-    for (DataPoint dp : dataPoints) outfile << dp.toCSV(false);
-    outfile.close();
-}
-
-std::string FDR::getLastDataPoint() {
+DataPoint* FDR::getLastDataPoint() {
 	if (dataPoints.size() > 0) {
-		return dataPoints.back().toCSV(false);
+		return &dataPoints.back();
 	}
 	else {
-		return "";
+		return NULL;
 	}
 }

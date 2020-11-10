@@ -15,6 +15,21 @@ using namespace std;
 
 DataPoint::DataPoint(float elapsed) {
     
+	char bytes[1024];
+	
+	// properties
+	simulatorVersion = readDataI("sim/version/xplane_internal_version");
+
+	readDataB("sim/aircraft/view/acf_ICAO", bytes, sizeof(bytes));
+	aircraftType = string(bytes);
+
+	readDataB("sim/aircraft/view/acf_tailnum", bytes, sizeof(bytes));
+	aircraftRegistration = string(bytes);
+
+	aircraftEmptyWeightKg = round(readDataF("sim/aircraft/weight/acf_m_empty"));
+	aircraftMaxWeightKg = round(readDataF("sim/aircraft/weight/acf_m_max"));
+
+	// time     
     elapsedFlightTime = elapsed;
     flightTimeStamp = readDataF("sim/time/zulu_time_sec");
     
@@ -64,15 +79,15 @@ DataPoint::DataPoint(float elapsed) {
 
     // engine power
     float pwr_engines[8];
-    readDataVF("sim/flightmodel/engine/ENGN_power", pwr_engines, 8);
-    enginePower1 = round(pwr_engines[0] * 100);
-    enginePower2 = round(pwr_engines[1] * 100);
-    enginePower3 = round(pwr_engines[2] * 100);
-    enginePower4 = round(pwr_engines[3] * 100);
-    enginePower5 = round(pwr_engines[4] * 100);
-    enginePower6 = round(pwr_engines[5] * 100);
-    enginePower7 = round(pwr_engines[6] * 100);
-    enginePower8 = round(pwr_engines[7] * 100);
+    readDataVF("sim/cockpit2/engine/indicators/power_watts", pwr_engines, 8);
+    enginePower1 = round(pwr_engines[0]);
+    enginePower2 = round(pwr_engines[1]);
+    enginePower3 = round(pwr_engines[2]);
+    enginePower4 = round(pwr_engines[3]);
+    enginePower5 = round(pwr_engines[4]);
+    enginePower6 = round(pwr_engines[5]);
+    enginePower7 = round(pwr_engines[6]);
+    enginePower8 = round(pwr_engines[7]);
     
     brakeLeft = round(readDataF("sim/cockpit2/controls/left_brake_ratio") * 100);
     brakeRight = round(readDataF("sim/cockpit2/controls/right_brake_ratio") * 100);
@@ -100,7 +115,9 @@ DataPoint::DataPoint(float elapsed) {
     cabinVsFPM = round(readDataF("sim/cockpit2/pressurization/indicators/cabin_vvi_fpm"));
 
     // ILS information
-    readDataB("sim/cockpit2/radios/indicators/nav1_nav_id", nav1Ident, 4);
+    readDataB("sim/cockpit2/radios/indicators/nav1_nav_id", bytes, sizeof(bytes));
+	nav1Id = string(bytes);
+
     nav1CourseDeg = round(readDataF("sim/cockpit/radios/nav1_course_degm"));
     nav1SlopeDeg = readDataF("sim/cockpit/radios/nav1_slope_degt");
     nav1DME = readDataF("sim/cockpit/radios/nav1_dme_dist_m");
@@ -113,158 +130,99 @@ DataPoint::~DataPoint() {
     
 }
 
-std::string DataPoint::toCSV(bool headers = false) {
-    
-    std::stringstream CSV;
-    
-    if (headers) CSV << "ElapsedFlightTime"; else CSV << elapsedFlightTime;
-    CSV << ';';
-    
-    if (headers) CSV << "FlightTimeStamp"; else CSV << flightTimeStamp;
-    CSV << ';';
-    
-    if (headers) CSV << "HeadingDeg"; else CSV << headingDeg;
-    CSV << ';';
+string DataPoint::toJSON() {
 
-    if (headers) CSV << "HeightFt"; else CSV << heightFt;
-    CSV << ';';
-    
-    if (headers) CSV << "AltitudeFt"; else CSV << altitudeFt;
-    CSV << ';';
-    
-    if (headers) CSV << "VerticalSpeedFPM"; else CSV << verticalSpeedFPM;
-    CSV << ';';
+	stringstream buffer;
 
-    if (headers) CSV << "SpeedIAS"; else CSV << speedIAS;
-    CSV << ';';
-    
-    if (headers) CSV << "SpeedMach"; else CSV << speedMach;
-    CSV << ';';
+	// properties
+	buffer << "\"simulatorVersion\": " << simulatorVersion << "," << std::endl;
+	buffer << "\"aircraftType\": \"" << aircraftType << "\"," << std::endl;
+	buffer << "\"aircraftRegistration\": \"" << aircraftRegistration << "\"," << std::endl;
+	buffer << "\"aircraftEmptyWeightKg\": " << aircraftEmptyWeightKg << "," << std::endl;
+	buffer << "\"aircraftMaxWeightKg\": " << aircraftMaxWeightKg << "," << std::endl;
 
-    if (headers) CSV << "PitchDeg"; else CSV << pitchDeg;
-    CSV << ';';
-    
-    if (headers) CSV << "BankDeg"; else CSV << bankDeg;
-    CSV << ';';
+	// time
+	buffer << "\"elapsedFlightTime\": " << elapsedFlightTime << "," << std::endl;
+	buffer << "\"flightTimeStamp\": " << flightTimeStamp << "," << std::endl;
 
-    if (headers) CSV << "Alpha"; else CSV << alpha;
-    CSV << ';';
-    
-    if (headers) CSV << "LoadFactorG"; else CSV << loadFactorG;
-    CSV << ';';
+	// flight and navigation
+	buffer << "\"headingDeg\": " << headingDeg << "," << std::endl;
+	buffer << "\"heightFt\": " << heightFt << "," << std::endl;
+	buffer << "\"altitudeFt\": " << altitudeFt << "," << std::endl;
+	buffer << "\"verticalSpeedFPM\": " << verticalSpeedFPM << "," << std::endl;
+	buffer << "\"speedIAS\": " << speedIAS << "," << std::endl;
+	buffer << "\"speedMach\": " << speedMach << "," << std::endl;
+	buffer << "\"pitchDeg\": " << pitchDeg << "," << std::endl;
+	buffer << "\"bankDeg\": " << bankDeg << "," << std::endl;
+	buffer << "\"alpha\": " << alpha << "," << std::endl;
+	buffer << "\"loadFactorG\": " << loadFactorG << "," << std::endl;
+	buffer << "\"trackDeg\": " << trackDeg << "," << std::endl;
+	buffer << "\"speedGS\": " << speedGS << "," << std::endl;
+	buffer << "\"latitudeDeg\": " << latitudeDeg << "," << std::endl;
+	buffer << "\"longitudeDeg\": " << longitudeDeg << "," << std::endl;
 
-    if (headers) CSV << "TrackDeg"; else CSV << trackDeg;
-    CSV << ';';
-    
-    if (headers) CSV << "SpeedGS"; else CSV << speedGS;
-    CSV << ';';
+	// weather
+	buffer << "\"windDeg\": " << windDeg << "," << std::endl;
+	buffer << "\"windKt\": " << windKt << "," << std::endl;
+	buffer << "\"oat\": " << oat << "," << std::endl;
 
-    if (headers) CSV << "LatitudeDeg"; else CSV << latitudeDeg;
-    CSV << ';';
+	// engines
+	buffer << "\"engineLever1\": " << engineLever1 << "," << std::endl;
+	buffer << "\"engineLever2\": " << engineLever2 << "," << std::endl;
+	buffer << "\"engineLever3\": " << engineLever3 << "," << std::endl;
+	buffer << "\"engineLever4\": " << engineLever4 << "," << std::endl;
+	buffer << "\"engineLever5\": " << engineLever5 << "," << std::endl;
+	buffer << "\"engineLever6\": " << engineLever6 << "," << std::endl;
+	buffer << "\"engineLever7\": " << engineLever7 << "," << std::endl;
+	buffer << "\"engineLever8\": " << engineLever8 << "," << std::endl;
 
-    if (headers) CSV << "LongitudeDeg"; else CSV << longitudeDeg;
-    CSV << ';';
+	// engine power
+	buffer << "\"enginePower1\": " << enginePower1 << "," << std::endl;
+	buffer << "\"enginePower2\": " << enginePower2 << "," << std::endl;
+	buffer << "\"enginePower3\": " << enginePower3 << "," << std::endl;
+	buffer << "\"enginePower4\": " << enginePower4 << "," << std::endl;
+	buffer << "\"enginePower5\": " << enginePower5 << "," << std::endl;
+	buffer << "\"enginePower6\": " << enginePower6 << "," << std::endl;
+	buffer << "\"enginePower7\": " << enginePower7 << "," << std::endl;
+	buffer << "\"enginePower8\": " << enginePower8 << "," << std::endl;
 
-    // weather
-    if (headers) CSV << "WindDeg"; else CSV << windDeg;
-    CSV << ';';
-    if (headers) CSV << "WindKt"; else CSV << windKt;
-    CSV << ';';
-    if (headers) CSV << "OAT"; else CSV << oat;
-    CSV << ';';
+	// brakes
+	buffer << "\"brakeLeft\": " << brakeLeft << "," << std::endl;
+	buffer << "\"brakeRight\": " << brakeRight << "," << std::endl;
+	buffer << "\"parkingBrake\": " << parkingBrake << "," << std::endl;
+	buffer << "\"gearLeverDown\": " << gearLeverDown << "," << std::endl;
 
-    // engines
-    if (headers) CSV << "EngineLever1"; else CSV << engineLever1;
-    CSV << ';';
-    if (headers) CSV << "EngineLever2"; else CSV << engineLever2;
-    CSV << ';';
-    if (headers) CSV << "EngineLever3"; else CSV << engineLever3;
-    CSV << ';';
-    if (headers) CSV << "EngineLever4"; else CSV << engineLever4;
-    CSV << ';';
-    if (headers) CSV << "EngineLever5"; else CSV << engineLever5;
-    CSV << ';';
-    if (headers) CSV << "EngineLever6"; else CSV << engineLever6;
-    CSV << ';';
-    if (headers) CSV << "EngineLever7"; else CSV << engineLever7;
-    CSV << ';';
-    if (headers) CSV << "EngineLever8"; else CSV << engineLever8;
-    CSV << ';';
+	// flight controls
+	buffer << "\"pitchControl\": " << pitchControl << "," << std::endl;
+	buffer << "\"rollControl\": " << rollControl << "," << std::endl;
+	buffer << "\"yawControl\": " << yawControl << "," << std::endl;
 
-    // engine power
-    if (headers) CSV << "EnginePower1"; else CSV << enginePower1;
-    CSV << ';';
-    if (headers) CSV << "EnginePower2"; else CSV << enginePower2;
-    CSV << ';';
-    if (headers) CSV << "EnginePower3"; else CSV << enginePower3;
-    CSV << ';';
-    if (headers) CSV << "EnginePower4"; else CSV << enginePower4;
-    CSV << ';';
-    if (headers) CSV << "EnginePower5"; else CSV << enginePower5;
-    CSV << ';';
-    if (headers) CSV << "EnginePower6"; else CSV << enginePower6;
-    CSV << ';';
-    if (headers) CSV << "EnginePower7"; else CSV << enginePower7;
-    CSV << ';';
-    if (headers) CSV << "EnginePower8"; else CSV << enginePower8;
-    CSV << ';';
+	// secondary flight controls
+	buffer << "\"flapLever\": " << flapLever << "," << std::endl;
+	buffer << "\"speedBrakeLever\": " << speedBrakeLever << "," << std::endl;
 
-    // brakes
-    if (headers) CSV << "BrakeLeft"; else CSV << brakeLeft;
-    CSV << ';';
-    if (headers) CSV << "BrakeRight"; else CSV << brakeRight;
-    CSV << ';';
-    if (headers) CSV << "ParkingBrake"; else CSV << parkingBrake;
-    CSV << ';';
+	// telemetry
+	buffer << "\"autopilotOn\": " << autopilotOn << "," << std::endl;
 
-    if (headers) CSV << "GearLeverDown"; else CSV << gearLeverDown;
-    CSV << ';';
+	// weights
+	buffer << "\"weightKg\": " << weightKg << "," << std::endl;
+	buffer << "\"fuelQuantityKg\": " << fuelQuantityKg << "," << std::endl;
 
-    // flight controls
-    if (headers) CSV << "PitchControl"; else CSV << pitchControl;
-    CSV << ';';
-    if (headers) CSV << "RollControl"; else CSV << rollControl;
-    CSV << ';';
-    if (headers) CSV << "YawControl"; else CSV << yawControl;
-    CSV << ';';
+	// cabin
+	buffer << "\"cabinAltFt\": " << cabinAltFt << "," << std::endl;
+	buffer << "\"cabinVsFPM\": " << cabinVsFPM << "," << std::endl;
 
-    // secondary flight controls
-    if (headers) CSV << "FlapLever"; else CSV << flapLever;
-    CSV << ';';
-    if (headers) CSV << "SpeedBrakeLever"; else CSV << speedBrakeLever;
-    CSV << ';';
+	// radio nav
+	buffer << "\"nav1Id\": \"" << nav1Id << "\"," << std::endl;
+	buffer << "\"nav1CourseDeg\": " << nav1CourseDeg << "," << std::endl;
+	buffer << "\"nav1SlopeDeg\": " << nav1SlopeDeg << "," << std::endl;
+	buffer << "\"nav1DME\": " << nav1DME << "," << std::endl;
+	buffer << "\"locDevDots\": " << locDevDots << "," << std::endl;
+	buffer << "\"glideDevDots\": " << glideDevDots << std::endl;
 
-    // telemetry
-    if (headers) CSV << "AutopilotOn"; else CSV << autopilotOn;
-    CSV << ';';
-
-    // weights
-    if (headers) CSV << "WeightKg"; else CSV << weightKg;
-    CSV << ';';
-    if (headers) CSV << "FuelQuantityKg"; else CSV << fuelQuantityKg;
-    CSV << ';';
-
-    // cabin
-    if (headers) CSV << "CabinAltFt"; else CSV << cabinAltFt;
-    CSV << ';';
-    if (headers) CSV << "CabinVsFPM"; else CSV << cabinVsFPM;
-    CSV << ';';
-
-    // radio nav
-    if (headers) CSV << "Nav1CourseDeg"; else CSV << nav1CourseDeg;
-    CSV << ';';
-    if (headers) CSV << "Nav1SlopeDeg"; else CSV << nav1SlopeDeg;
-    CSV << ';';
-    if (headers) CSV << "Nav1DME"; else CSV << nav1DME;
-    CSV << ';';
-    if (headers) CSV << "LocDevDots"; else CSV << locDevDots;
-    CSV << ';';
-    if (headers) CSV << "GlideDevDots"; else CSV << glideDevDots;
-    CSV << ';';
-    
-    CSV << std::endl;
-    
-    return CSV.str();
+	string dataJSON = "{\n" + buffer.str() + "}\n";
+	buffer.clear();
+	return dataJSON;
 }
 
 string DataPoint::getXACARSFormattedLocation() {

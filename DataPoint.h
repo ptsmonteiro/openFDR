@@ -9,9 +9,18 @@
 #include <string>
 #include <sstream>
 
+using namespace std;
+
 class DataPoint {
 
 public:
+
+	// properties
+	int simulatorVersion;
+	string aircraftType;
+	string aircraftRegistration;
+	int aircraftEmptyWeightKg;
+	int aircraftMaxWeightKg;
 
     float flightTimeStamp;
     
@@ -89,7 +98,7 @@ public:
     int cabinVsFPM;
     
     // Radio nav information
-    char nav1Ident[4];
+    string nav1Id;
     int nav1CourseDeg;
     float nav1SlopeDeg;
     float nav1DME;
@@ -103,7 +112,7 @@ public:
     DataPoint(float);
     ~DataPoint();
     
-    std::string getXACARSFormattedLocation();
+    string getXACARSFormattedLocation();
     
-    std::string toCSV(bool);
+	string toJSON();
 };
