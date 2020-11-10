@@ -70,14 +70,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Config.cpp" />
     <ClCompile Include="DataPoint.cpp" />
     <ClCompile Include="openFDR.cpp" />
     <ClCompile Include="TCPServer.cpp" />
     <ClCompile Include="utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Config.h" />
     <ClInclude Include="DataPoint.h" />
     <ClInclude Include="sdk\cheaders\widgets\XPStandardWidgets.h" />
     <ClInclude Include="sdk\cheaders\widgets\XPUIGraphics.h" />
