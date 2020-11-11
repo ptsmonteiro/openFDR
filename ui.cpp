@@ -162,7 +162,7 @@ XPWidgetID UI::CreatePluginWindow(int x, int y, int w, int h)
     return window;
 }
 
-int UI::TextFieldHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long inParam1, long inParam2) {
+int UI::TextFieldHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, intptr_t inParam1, intptr_t inParam2) {
     char buffer[1024];
     
     if (inMessage == xpMsg_DescriptorChanged) {
@@ -231,7 +231,7 @@ int UI::TextFieldHandler(XPWidgetMessage inMessage, XPWidgetID inWidget, long in
     return 0;
 }
 
-int UI::PluginWindowHandler(XPWidgetMessage  inMessage, XPWidgetID  inWidget, long  inParam1, long  inParam2)
+int UI::PluginWindowHandler(XPWidgetMessage  inMessage, XPWidgetID  inWidget, intptr_t  inParam1, intptr_t inParam2)
 {
     if (inMessage == xpMessage_CloseButtonPushed)
     {

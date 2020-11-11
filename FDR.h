@@ -9,7 +9,9 @@
 #include <string>
 #include <stdio.h>
 #include <list>
-#include "XACARS.h"
+#include "DataPoint.h"
+#include "Config.h"
+#include "Flight.h"
 
 class FDR
 {

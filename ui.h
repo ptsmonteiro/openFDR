@@ -48,7 +48,7 @@ public:
 
     static void initMenus();
     static XPWidgetID CreatePluginWindow(int, int, int, int);
-    static int PluginWindowHandler(XPWidgetMessage, XPWidgetID, long, long);
-    static int TextFieldHandler(XPWidgetMessage, XPWidgetID, long, long);
+    static int PluginWindowHandler(XPWidgetMessage, XPWidgetID, intptr_t, intptr_t);
+    static int TextFieldHandler(XPWidgetMessage, XPWidgetID, intptr_t, intptr_t);
     static void MenuHandler(void *, void *);
 };
