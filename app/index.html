@@ -1,19 +1,65 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-    <title>Hello World!</title>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    We are using Node.js <span id="node-version"></span>,
-    Chromium <span id="chrome-version"></span>,
-    and Electron <span id="electron-version"></span>.
+<head>
+  <meta charset="UTF-8">
+  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" href="./node_modules/spectre.css/dist/spectre.min.css">
+  <title>openFDR</title>
+</head>
+<body>
+  <h1>Flight</h1>
+  <form class="form-horizontal">
 
-    <!-- You can also require other files to run in this process -->
-    <script src="./renderer.js"></script>
-  </body>
+    <div class="form-group">
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="inputFlightNumber">Flight Number</label>
+        <input class="form-input" id="inputFlightNumber" type="text" placeholder="Ex. ZE999">
+      </div>
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="inputType">Aircraft Type</label>
+        <input class="form-input" id="inputType" type="text" placeholder="Ex. A320">
+      </div>
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="inputDeparture">Departure</label>
+        <input class="form-input" id="inputDeparture" type="text" placeholder="ICAO 4 letter">
+      </div>
+      <div class="col-3 col-sm-12">
+        <label class="form-label" for="inputArrival">Arrival</label>
+        <input class="form-input" id="inputArrival" type="text" placeholder="ICAO 4 letter">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="inputRoute">Route</label>
+      <textarea class="form-input" id="inputRoute" type="text" placeholder="Enter your route here"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="inputRemarks">Remarks</label>
+      <textarea class="form-input" id="inputRemarks" type="text" placeholder="Enter your remarks/comments"></textarea>
+    </div>
+    <div class="form-group">
+      <button id="submitBtn" type="button" class="btn">Submit</button>
+    </div>
+  </form>
+
+  <h2>Status</h2>
+  <p>
+    X-Plane is <span id="xplane-connection"></span>,
+    Live ACARS is <span id="acars-connection"></span>
+  </p>
+  <button id="flightBtn" type="button" class="btn">
+    Login
+  </button>
+  <button id="settingsBtn" type="button" class="btn">
+    Settings
+  </button>
+  <button id="flightBtn" type="button" class="btn">
+    Flight
+  </button>
+
+  <!-- You can also require other files to run in this process -->
+  <script src="./index.js"></script>
+</body>
 </html>

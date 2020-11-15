@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
     if (element) element.innerText = text
   }
 
-  for (const type of ['chrome', 'node', 'electron']) {
-    replaceText(`${type}-version`, process.versions[type])
-  }
+  replaceText('xplane-connection', 'inactive')
+  replaceText('acars-connection', 'inactive')
+
 })
