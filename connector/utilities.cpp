@@ -1,5 +1,5 @@
 //
-//  utitilies.cpp
+//  utilities.cpp
 //  openFDR
 //
 //  Created by Pedro on 16/04/2018.
@@ -7,7 +7,7 @@
 
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
-#include "utitilies.h"
+#include "utilities.h"
 
 int readDataI(const char *dataref){
     int value = 0;
@@ -47,24 +47,4 @@ int readDataVI(const char *dataref, int *vector, int size) {
     int readValues = 0;
     readValues = XPLMGetDatavi(XPLMFindDataRef(dataref), vector, 0, size-1);
     return readValues;
-}
-
-float getSimUnixTimestamp() {
-    int localdays = readDataI("sim/time/local_date_days");
-    float zulu_time_secs = readDataF("sim/time/zulu_time_sec");
-    
-    time_t t;
-    time(&t);
-    
-    struct tm *timeinfo = gmtime(&t);
-    timeinfo->tm_mon = 1;
-    timeinfo->tm_mday += localdays;
-    t = mktime(timeinfo);
-    
-    return (t + zulu_time_secs);
-}
-
-void devConsole(string m) {
-    string message = "openFDR: " + m + "\n";
-    XPLMDebugString(message.c_str());
 }

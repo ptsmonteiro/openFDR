@@ -1,8 +1,0 @@
-xacars_acars_url = https://zonexecutive.com/action.php/acars/xacars/acars
-xacars_pirep_url = https://zonexecutive.com/action.php/acars/xacars/pirep
-xacars_flight_info_url = https://zonexecutive.com/action.php/acars/xacars/data
-xacars_username = ZE000
-xacars_password = thatwouldbeawesome
-xacars_pos_report_min = 10
-openfdr_url = https://zonexecutive.com/action.php/acars/openfdr/fdr
-
