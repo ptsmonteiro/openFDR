@@ -48,6 +48,7 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>Number</th>
           <th>Aircraft</th>
           <th>Origin</th>
           <th>Destination</th>
@@ -55,33 +56,37 @@
           <th>State</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
+      <tbody id="recorded-flights">
+        <tr data-flight-id="45398">
           <td>14 Nov 2020, 13h32</td>
+          <td>N/A</td>
           <td>A320</td>
           <td>LFPO</td>
-          <td>Unknown</td>
-          <td>Unknown</td>
+          <td>N/A</td>
+          <td>N/A</td>
           <td>Recording</td>
         </tr>
-        <tr>
+        <tr data-flight-id="023948">
           <td>12 Nov 2020, 10h00</td>
+          <td>N/A</td>
           <td>A320</td>
           <td>LFPO</td>
-          <td>Unknown</td>
-          <td>Unknown</td>
+          <td>N/A</td>
+          <td>N/A</td>
           <td>Interruped</td>
         </tr>
-        <tr>
+        <tr data-flight-id="43598">
           <td>10 Nov 2020, 10h10</td>
+          <td>EJU123</td>
           <td>A320</td>
           <td>LFPO</td>
           <td>LFPG</td>
           <td>0:40</td>
           <td>Completed</td>
         </tr>
-        <tr>
+        <tr data-flight-id="54634">
           <td>3 Nov 2020, 07h15</td>
+          <td>ZE1234</td>
           <td>A320</td>
           <td>LEMD</td>
           <td>LIMC</td>
@@ -91,43 +96,6 @@
       </tbody>
     </table>
   </div>
-
-
-
-  <form class="form-horizontal">
-
-    <div class="form-group">
-      <div class="col-3 col-sm-12">
-        <label class="form-label" for="inputFlightNumber">Flight Number</label>
-        <input class="form-input" id="inputFlightNumber" type="text" placeholder="Ex. ZE999">
-      </div>
-      <div class="col-3 col-sm-12">
-        <label class="form-label" for="inputType">Aircraft Type</label>
-        <input class="form-input" id="inputType" type="text" placeholder="Ex. A320">
-      </div>
-      <div class="col-3 col-sm-12">
-        <label class="form-label" for="inputDeparture">Departure</label>
-        <input class="form-input" id="inputDeparture" type="text" placeholder="ICAO 4 letter">
-      </div>
-      <div class="col-3 col-sm-12">
-        <label class="form-label" for="inputArrival">Arrival</label>
-        <input class="form-input" id="inputArrival" type="text" placeholder="ICAO 4 letter">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label class="form-label" for="inputRoute">Route</label>
-      <textarea class="form-input" id="inputRoute" type="text" placeholder="Enter your route here"></textarea>
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="inputRemarks">Remarks</label>
-      <textarea class="form-input" id="inputRemarks" type="text" placeholder="Enter your remarks/comments"></textarea>
-    </div>
-    <div class="form-group">
-      <button id="submitBtn" type="button" class="btn">Submit</button>
-    </div>
-  </form>
-
 
   <!-- You can also require other files to run in this process -->
   <script src="./index.js"></script>

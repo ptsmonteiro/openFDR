@@ -30,7 +30,6 @@ app.whenReady().then(() => {
   const mainWindow = createWindow()
 
   let settingsWindow
-
   ipcMain.on('open-settings', () => {
     if (settingsWindow) return
     settingsWindow = new BrowserWindow({
@@ -45,6 +44,24 @@ app.whenReady().then(() => {
     })
     settingsWindow.on('closed', () => {
       settingsWindow = null
+    })
+  })
+
+  let flightWindow
+  ipcMain.on('open-flight', () => {
+    if (flightWindow) return
+    flightWindow = new BrowserWindow({
+      width: 400,
+      height: 500,
+      show: false,
+      parent: mainWindow
+    })
+    flightWindow.loadFile('flight.html')
+    flightWindow.once('ready-to-show', () => {
+      flightWindow.show()
+    })
+    flightWindow.on('closed', () => {
+      flightWindow = null
     })
   })
 
