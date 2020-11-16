@@ -6,6 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <link rel="stylesheet" href="./node_modules/spectre.css/dist/spectre.min.css">
+  <link rel="stylesheet" href="./style.css">
   <title>openFDR</title>
 </head>
 <body>
@@ -49,15 +50,8 @@
     X-Plane is <span id="xplane-connection"></span>,
     Live ACARS is <span id="acars-connection"></span>
   </p>
-  <button id="flightBtn" type="button" class="btn">
-    Login
-  </button>
-  <button id="settingsBtn" type="button" class="btn">
-    Settings
-  </button>
-  <button id="flightBtn" type="button" class="btn">
-    Flight
-  </button>
+  <button id="connectBtn" type="button" class="btn">Connect</button>
+  <button id="configBtn" type="button" class="btn">Config</button>
 
   <!-- You can also require other files to run in this process -->
   <script src="./index.js"></script>
