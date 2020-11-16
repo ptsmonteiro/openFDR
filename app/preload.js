@@ -6,7 +6,4 @@ window.addEventListener('DOMContentLoaded', () => {
     if (element) element.innerText = text
   }
 
-  replaceText('xplane-connection', 'inactive')
-  replaceText('acars-connection', 'inactive')
-
 })

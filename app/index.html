@@ -10,7 +10,89 @@
   <title>openFDR</title>
 </head>
 <body>
-  <h1>Flight</h1>
+  <div class="container">
+    <h1>Status</h1>
+    <p>
+      <span id="span-xplane" class="label label-error">X-Plane not connected</span>
+      <span id="span-acars" class="label label-warning">Live ACARS not active</span>
+      <span id="span-recorder" class="label label-warning">Recorder not active</span>
+    </p>
+    <button id="configBtn" type="button" class="btn">Config</button>
+  </div>
+
+  <div class="container">
+    <h1>Recorder</h1>
+    <p>
+      <span class="label">Aircraft</span> <span id="span-aircraft" class="">A320</span>,
+      <span class="label">On Ground</span> <span id="span-recorder" class="">yes</span>,
+      <span class="label">Engines Running</span> <span id="span-recorder" class="">no</span>
+    </p>
+    <p>
+      <span class="label">Location</span> <span id="span-location" class="">LFPO</span>,
+      <span class="label">Heading</span> <span id="span-recorder" class="">273</span>,
+      <span class="label">Track</span> <span id="span-recorder" class="">273</span>,
+      <span class="label">Ground Speed</span> <span id="span-recorder" class="">0 kts</span>
+    </p>
+    <p>
+      <span class="label">Altitude</span> <span id="span-recorder" class="">324 ft</span>,
+      <span class="label">Vertical Speed</span> <span id="span-recorder" class="">0 fpm</span>,
+      <span class="label">True Airspeed</span> <span id="span-recorder" class="">2 kts</span>
+    </p>
+  </div>
+
+
+  <div class="container">
+    <h1>Recorded Flights</h1>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Aircraft</th>
+          <th>Origin</th>
+          <th>Destination</th>
+          <th>Duration</th>
+          <th>State</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>14 Nov 2020, 13h32</td>
+          <td>A320</td>
+          <td>LFPO</td>
+          <td>Unknown</td>
+          <td>Unknown</td>
+          <td>Recording</td>
+        </tr>
+        <tr>
+          <td>12 Nov 2020, 10h00</td>
+          <td>A320</td>
+          <td>LFPO</td>
+          <td>Unknown</td>
+          <td>Unknown</td>
+          <td>Interruped</td>
+        </tr>
+        <tr>
+          <td>10 Nov 2020, 10h10</td>
+          <td>A320</td>
+          <td>LFPO</td>
+          <td>LFPG</td>
+          <td>0:40</td>
+          <td>Completed</td>
+        </tr>
+        <tr>
+          <td>3 Nov 2020, 07h15</td>
+          <td>A320</td>
+          <td>LEMD</td>
+          <td>LIMC</td>
+          <td>1:50</td>
+          <td>Synced</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+
+
   <form class="form-horizontal">
 
     <div class="form-group">
@@ -45,13 +127,6 @@
     </div>
   </form>
 
-  <h2>Status</h2>
-  <p>
-    X-Plane is <span id="xplane-connection"></span>,
-    Live ACARS is <span id="acars-connection"></span>
-  </p>
-  <button id="connectBtn" type="button" class="btn">Connect</button>
-  <button id="configBtn" type="button" class="btn">Config</button>
 
   <!-- You can also require other files to run in this process -->
   <script src="./index.js"></script>
