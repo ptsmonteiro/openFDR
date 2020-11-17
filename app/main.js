@@ -3,6 +3,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
+const net = require('net');
 
 const Datastore = require('nedb')
 const db = {
@@ -14,7 +15,6 @@ const db = {
 const util = require('util')
 
 function createWindow () {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 700,
     height: 600,
@@ -23,21 +23,11 @@ function createWindow () {
       nodeIntegration: true
     }
   })
-
-  // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
   return mainWindow
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
-  const mainWindow = createWindow()
-
+function setupSettings(parentWindow) {
   let settingsWindow
   ipcMain.on('open-settings', () => {
     if (settingsWindow) return
@@ -47,7 +37,7 @@ app.whenReady().then(() => {
       height: 500,
       show: false,
       modal: true,
-      parent: mainWindow
+      parent: parentWindow
     })
     settingsWindow.loadFile('settings.html')
     settingsWindow.once('ready-to-show', () => {
@@ -62,16 +52,14 @@ app.whenReady().then(() => {
   })
 
   ipcMain.on('config-data-write', (event, doc) => {
-    console.log('updating with doc ' + util.inspect(doc))
     db.config.update({}, doc, {upsert: true}, (err, doc) => {
-      if (err) {
-        console.log('error ' + err)
-      }
+      if (err) { console.log('error ' + err) }
       settingsWindow.close()
     })
   })
+}
 
-
+function setupFlightDetails(parentWindow) {
   let flightWindow
   ipcMain.on('open-flight', () => {
     if (flightWindow) return
@@ -81,7 +69,7 @@ app.whenReady().then(() => {
       height: 500,
       show: false,
       modal: true,
-      parent: mainWindow
+      parent: parentWindow
     })
     flightWindow.loadFile('flight.html')
     flightWindow.once('ready-to-show', () => {
@@ -91,20 +79,26 @@ app.whenReady().then(() => {
       flightWindow = null
     })
   })
+}
+
+function start() {
+  const mainWindow = createWindow()
+
+  setupSettings(mainWindow)
+  setupFlightDetails(mainWindow)
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+
+}
+
+app.whenReady().then(() => {
+  start()
 })
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
