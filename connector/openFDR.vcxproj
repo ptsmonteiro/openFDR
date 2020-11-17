@@ -42,14 +42,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(ProjectDir)\SDK\CHeaders\XPLM;$(ProjectDir)\SDK\CHeaders\Wrappers;$(ProjectDir)\SDK\CHeaders\Widgets;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\SDK\Libraries\Win;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\..\X-Plane 11\Resources\plugins\openFDR\64\</OutDir>
+    <OutDir>..\..\..\..\..\X-Plane 11\Resources\plugins\openFDR\64\</OutDir>
     <TargetName>win</TargetName>
     <TargetExt>.xpl</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(ProjectDir)\SDK\CHeaders\XPLM;$(ProjectDir)\SDK\CHeaders\Wrappers;$(ProjectDir)\SDK\CHeaders\Widgets;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\SDK\Libraries\Win;$(LibraryPath)</LibraryPath>
-    <OutDir>..\..\..\..\X-Plane 11\Resources\plugins\openFDR\64\</OutDir>
+    <OutDir>..\..\..\..\..\X-Plane 11\Resources\plugins\openFDR\64\</OutDir>
     <TargetName>win</TargetName>
     <TargetExt>.xpl</TargetExt>
   </PropertyGroup>

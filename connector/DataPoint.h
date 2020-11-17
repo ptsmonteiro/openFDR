@@ -54,6 +54,9 @@ public:
     
     float latitudeDeg;
     float longitudeDeg;
+
+	string nearestAirportId;
+	string nearestAirportName;
         
     // engine
 	int engineRunning[8];
