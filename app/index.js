@@ -19,6 +19,8 @@ ipcRenderer.on('state-update', (event, data) => {
   updateStateParam('span-onground', data.heightFt < 1 ? 'yes' : 'no')
   updateStateParam('span-engines-running', data.engineRunning.includes(1) ? 'yes' : 'no')
   updateStateParam('span-location', data.latitudeDeg + ', ' + data.longitudeDeg)
+  updateStateParam('span-location', data.nearestAirportName +
+    ' (' + data.nearestAirportId + ')')
   updateStateParam('span-heading', data.headingDeg)
   updateStateParam('span-track', data.trackDeg)
   updateStateParam('span-gs', data.speedGS)
