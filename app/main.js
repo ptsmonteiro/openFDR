@@ -4,6 +4,15 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 
+const Datastore = require('nedb')
+const db = {
+  config: new Datastore({ filename: 'config.db', autoload: true }),
+  flights: new Datastore({ filename: 'flights.db', autoload: true }),
+  data: new Datastore({ filename: 'telemetry.db', autoload: true }),
+}
+
+const util = require('util')
+
 function createWindow () {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -33,13 +42,18 @@ app.whenReady().then(() => {
   ipcMain.on('open-settings', () => {
     if (settingsWindow) return
     settingsWindow = new BrowserWindow({
-      width: 400,
+      webPreferences: { nodeIntegration: true, enableRemoteModule: true},
+      width: 500,
       height: 500,
       show: false,
+      modal: true,
       parent: mainWindow
     })
     settingsWindow.loadFile('settings.html')
     settingsWindow.once('ready-to-show', () => {
+      db.config.findOne({}, (err, doc) => {
+        settingsWindow.webContents.send('config-data-read', doc)
+      })
       settingsWindow.show()
     })
     settingsWindow.on('closed', () => {
@@ -47,13 +61,26 @@ app.whenReady().then(() => {
     })
   })
 
+  ipcMain.on('config-data-write', (event, doc) => {
+    console.log('updating with doc ' + util.inspect(doc))
+    db.config.update({}, doc, {upsert: true}, (err, doc) => {
+      if (err) {
+        console.log('error ' + err)
+      }
+      settingsWindow.close()
+    })
+  })
+
+
   let flightWindow
   ipcMain.on('open-flight', () => {
     if (flightWindow) return
     flightWindow = new BrowserWindow({
+      webPreferences: { nodeIntegration: true, enableRemoteModule: true},
       width: 400,
       height: 500,
       show: false,
+      modal: true,
       parent: mainWindow
     })
     flightWindow.loadFile('flight.html')

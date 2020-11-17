@@ -6,33 +6,38 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <link rel="stylesheet" href="./node_modules/spectre.css/dist/spectre.min.css">
-  <title>openFDR - Settings</title>
+  <link rel="stylesheet" href="./style.css">
+  <title>Settings</title>
 </head>
 <body>
-  <h1>Settings</h1>
-  <form class="form-horizontal">
+  <div class="container">
+  <div class="column">
+    <h1>Settings</h1>
+    <form id="form-settings" class="form-horizontal">
+      <div class="form-group">
+        <label class="form-label" for="inputVA">Virtual Airline</label>
+        <input class="form-input" id="inputVA" type="text" placeholder="Ex. Zon Executive">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inputURL">VA openFDR URL</label>
+        <input class="form-input" id="inputURL" type="url" placeholder="Ex. https://<your_va.url>/openfdr">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inputUsername">VA Username</label>
+        <input class="form-input" id="inputUsername" type="text" placeholder="Your Virtual Airline username">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="inputPassword">VA Password</label>
+        <input class="form-input" id="inputPassword" type="password" placeholder="Your Virtual Airline password">
+      </div>
+      <div class="form-group">
+        <button id="submitBtn" type="button" class="btn">OK</button>
+        <button id="cancelBtn" type="button" class="btn">Cancel</button>
+      </div>
+    </div>
+    </form>
 
-    <div class="form-group">
-      <label class="form-label" for="inputVA">Virtual Airline</label>
-      <input class="form-input" id="inputVA" type="text" placeholder="Ex. Zon Executive">
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="inputURL">VA openFDR URL</label>
-      <input class="form-input" id="inputURL" type="text" placeholder="Ex. https://<your_va.url>/openfdr">
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="inputUsername">VA Username</label>
-      <input class="form-input" id="inputUsername" type="text" placeholder="Your Virtual Airline username">
-    </div>
-    <div class="form-group">
-      <label class="form-label" for="inputPassword">VA Password</label>
-      <input class="form-input" id="inputPassword" type="password" placeholder="Your Virtual Airline password">
-    </div>
-    <div class="form-group">
-      <button id="submitBtn" type="button" class="btn">OK</button>
-      <button id="cancelBtn" type="button" class="btn">Cancel</button>
-    </div>
-  </form>
+  </div>
 
   <!-- You can also require other files to run in this process -->
   <script src="./settings.js"></script>
