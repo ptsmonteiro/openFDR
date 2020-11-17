@@ -3,7 +3,7 @@
 // Modules to control application life and create native browser window
 const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
-const net = require('net');
+const net = require('net')
 
 const Datastore = require('nedb')
 const db = {
@@ -81,22 +81,47 @@ function setupFlightDetails(parentWindow) {
   })
 }
 
-function start() {
-  const mainWindow = createWindow()
+function setupNetwork() {
+  const client = net.connect({
+    host: '192.168.1.49',
+    port: 45558,
+    onread: {
+      // Reuses a 4KiB Buffer for every read from the socket.
+      buffer: Buffer.alloc(4 * 1024),
+      callback: function(nread, buf) {
+        // Received data is available in `buf` from 0 to `nread`.
+        const dataPoint = JSON.parse(buf.toString('utf8', 0, nread))
+        console.log(util.inspect(dataPoint))
+        ipcMain.emit('datapoint-received', dataPoint)
+      }
+    }
+  })
 
-  setupSettings(mainWindow)
-  setupFlightDetails(mainWindow)
-
-  app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  client.on('error', (err) => {
+    console.log('client error: ' + err)
+  })
+  client.on('end', () => {
+    console.log('client ended connection')
+  })
+  client.on('close', () => {
+    console.log('client closed the connection')
   })
 
 }
 
 app.whenReady().then(() => {
-  start()
+  const mainWindow = createWindow()
+  ipcMain.on('datapoint-received', (data) => {
+    mainWindow.webContents.send('state-update', data)
+  })
+
+  setupSettings(mainWindow)
+  setupFlightDetails(mainWindow)
+  setupNetwork()
+
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+  })
 })
 
 app.on('window-all-closed', function () {
