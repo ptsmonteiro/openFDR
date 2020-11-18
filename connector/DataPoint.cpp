@@ -8,6 +8,7 @@
 #include <cmath>
 #include "XPLMDataAccess.h"
 #include "XPLMUtilities.h"
+#include "XPLMNavigation.h"
 #include "DataPoint.h"
 #include "utilities.h"
 
@@ -60,6 +61,13 @@ DataPoint::DataPoint(float elapsed) {
     
     latitudeDeg = readDataF("sim/flightmodel/position/latitude");
     longitudeDeg = readDataF("sim/flightmodel/position/longitude");
+
+	XPLMNavRef nearestAirportRef = XPLMFindNavAid(NULL, NULL, &latitudeDeg, &longitudeDeg, NULL, xplm_Nav_Airport);
+	char airportId[1024];
+	char airportName[1024];
+	XPLMGetNavAidInfo(nearestAirportRef, NULL, NULL, NULL, NULL, NULL, NULL, airportId, airportName, NULL);
+	nearestAirportId = airportId;
+	nearestAirportName = airportName;
 
     // weather
     windDeg = round(readDataF("sim/cockpit2/gauges/indicators/wind_heading_deg_mag"));
@@ -157,6 +165,8 @@ string DataPoint::toJSON() {
 	buffer << "\"speedGS\": " << speedGS << "," << std::endl;
 	buffer << "\"latitudeDeg\": " << latitudeDeg << "," << std::endl;
 	buffer << "\"longitudeDeg\": " << longitudeDeg << "," << std::endl;
+	buffer << "\"nearestAirportId\": \"" << nearestAirportId << "\"," << std::endl;
+	buffer << "\"nearestAirportName\": \"" << nearestAirportName << "\"," << std::endl;
 
 	// weather
 	buffer << "\"windDeg\": " << windDeg << "," << std::endl;
@@ -170,21 +180,21 @@ string DataPoint::toJSON() {
 	for (i = 0; i < aircraftNumberOfEngines-1; i++) {
 		buffer << engineRunning[i] << ", ";
 	}
-	buffer << engineRunning[i] << "]" << std::endl;
+	buffer << engineRunning[i] << "]," << std::endl;
 
 	// thrust lever
 	buffer << "\"engineLever\": [";
 	for (i = 0; i < aircraftNumberOfEngines - 1; i++) {
 		buffer << engineLever[i] << ", ";
 	}
-	buffer << engineLever[i] << "]" << std::endl;
+	buffer << engineLever[i] << "]," << std::endl;
 
 	// power
 	buffer << "\"enginePowerWatt\": [";
 	for (i = 0; i < aircraftNumberOfEngines - 1; i++) {
 		buffer << enginePowerWatt[i] << ", ";
 	}
-	buffer << enginePowerWatt[i] << "]" << std::endl;
+	buffer << enginePowerWatt[i] << "]," << std::endl;
 
 	// brakes
 	buffer << "\"brakeLeft\": " << brakeLeft << "," << std::endl;
