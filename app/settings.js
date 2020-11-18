@@ -8,6 +8,7 @@ ipcRenderer.on('config-data-read', (event, doc) => {
   document.getElementById('inputURL').value = doc.url
   document.getElementById('inputUsername').value = doc.username
   document.getElementById('inputPassword').value = doc.password
+  document.getElementById('inputIP').value = doc.ip
 })
 
 document.getElementById('submitBtn').addEventListener('click', () => {
@@ -17,6 +18,7 @@ document.getElementById('submitBtn').addEventListener('click', () => {
     url: form.elements.inputURL.value,
     username: form.elements.inputUsername.value,
     password: form.elements.inputPassword.value,
+    ip: form.elements.inputIP.value,
   }
   ipcRenderer.send('config-data-write', settings)
 })

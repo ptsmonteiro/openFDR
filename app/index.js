@@ -2,10 +2,6 @@
 
 const { ipcRenderer } = require('electron')
 
-function updateStateParam(id, value) {
-  document.getElementById(id).innerHTML = value
-}
-
 document.getElementById('configBtn').addEventListener('click', () => {
   ipcRenderer.send('open-settings')
 })
@@ -13,6 +9,10 @@ document.getElementById('configBtn').addEventListener('click', () => {
 document.getElementById('recorded-flights').addEventListener('click', (ev) => {
   ipcRenderer.send('open-flight', {id: ev.target.parentNode.dataset.flightId})
 })
+
+function updateStateParam(id, value) {
+  document.getElementById(id).innerHTML = value
+}
 
 ipcRenderer.on('state-update', (event, data) => {
   updateStateParam('span-aircraft', data.aircraftType)
@@ -27,4 +27,16 @@ ipcRenderer.on('state-update', (event, data) => {
   updateStateParam('span-ias', data.speedIAS)
   updateStateParam('span-altitude', data.altitudeFt)
   updateStateParam('span-vs', data.verticalSpeedFPM)
+})
+
+ipcRenderer.on('xplane-connected', (event, data) => {
+  const span = document.getElementById('span-xplane')
+  span.innerHTML = 'X-Plane connected'
+  span.class = 'label label-success'
+})
+
+ipcRenderer.on('xplane-disconnected', (event, data) => {
+  const span = document.getElementById('span-xplane')
+  span.innerHTML = 'X-Plane not connected'
+  span.class = 'label label-error'
 })
