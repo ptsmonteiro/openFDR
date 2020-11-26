@@ -5,6 +5,7 @@ const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const net = require('net')
 const util = require('util')
+const Recorder = require('./recorder')
 
 const Datastore = require('nedb')
 const db = {
@@ -72,7 +73,7 @@ function setupFlightDetails(parentWindow) {
       modal: true,
       parent: parentWindow
     })
-    flightWindow.loadFile('flight.html')
+    flightWindow.loadFile('flight_form.html')
     flightWindow.once('ready-to-show', () => {
       flightWindow.show()
     })
@@ -126,8 +127,11 @@ function setupNetwork() {
 
 app.whenReady().then(() => {
   const mainWindow = createWindow()
+  const recorder = new Recorder(db.flights, db.data)
+
   ipcMain.on('datapoint-received', (data) => {
     mainWindow.webContents.send('state-update', data)
+    recorder.update(data)
   })
 
   setupSettings(mainWindow)
