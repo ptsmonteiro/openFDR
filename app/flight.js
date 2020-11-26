@@ -1,14 +1,8 @@
-const State = {
-  INCOMPLETE: 0,
-  ONGOING: 1,
-  COMPLETE: 2,
-  SYNCHED: 3,
-}
-
 class Flight {
 
-  constructor(flightDb) {
+  constructor(flightDb, data) {
     // general
+    this.id = this.idFromData(data)
     this.number = ''
     this.aircraftType = ''
     this.departure = ''
@@ -30,8 +24,13 @@ class Flight {
     this.totalBlockOnWeight = 0
     this.usedFuelWeight = 0
 
-    // state
-    this.state = INCOMPLETE
+    // flight report sent
+    this.sent = false
+  }
+
+  idFromData(data) {
+    let id = Date.now() + '.' + data.nearestAirportId + '.' + data.aircraftType
+    return id
   }
 
 }

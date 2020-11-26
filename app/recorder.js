@@ -16,6 +16,7 @@ class Recorder {
   constructor(flightDb, dataDb) {
     this.flightDb = flightDb
     this.dataDb = dataDb
+    this.flight = null
     this.phase = Phase.RAMP
     this.isRecording = false
   }
@@ -32,12 +33,34 @@ class Recorder {
     return data.speedGS < 1
   }
 
-  startRecording() {
-    this.isRecording = true
+  aircraftIsCrashed(data) {
+    return (data.isCrashed ? true : false)
   }
 
-  stopRecording() {
+  startRecording(data) {
+    this.isRecording = true
+    this.flight = new Flight(this.flightDb)
+  }
+
+  stopRecording(data) {
     this.isRecording = false
+  }
+
+  saveData(data) {
+    console.log('saving data snapshot')
+    let d = data
+    d.flightId = this.flight.id
+    this.dataDb.insert(d, (err, doc) => {
+      if (err) { console.log('error saving data snapshot: ' + err) }
+    })
+
+  }
+
+  saveFlight() {
+    console.log('saving flight')
+    this.flightDb.update({'id': this.flight.id}, this.flight, {upsert: true}, (err, doc) => {
+      if (err) { console.log('error saving flight: ' + err) }
+    })
   }
 
   update(data) {
@@ -45,13 +68,17 @@ class Recorder {
     if (this.isRecording &&
       this.aircraftIsOnGround(data) &&
       this.aircraftIsStopped(data) &&
-      !this.aircraftEngineIsRunning(data)) {
-        this.stopRecording()
+      (!this.aircraftEngineIsRunning(data) || this.aircraftIsCrashed(data))) {
+        this.stopRecording(data)
     }
     // Recording will start when the first engine is started on ground
-    else if (!this.isRecording && this.aircraftIsOnGround(data)) {
-        this.startRecording()
+    else if (!this.isRecording &&
+      this.aircraftIsOnGround(data) &&
+      this.aircraftEngineIsRunning(data) &&
+      !this.aircraftIsCrashed(data)) {
+        this.startRecording(data)
     }
+    saveData(data)
   }
 
   updatePhase(data) {
@@ -63,21 +90,29 @@ class Recorder {
     if (this.phase == Phase.RAMP) {
       if (this.aircraftEngineIsRunning(data) && !this.aircraftIsStopped(data)) {
         this.phase = Phase.TAXI_OUT
+        this.flight.timeOut = Date.now()
+        this.saveFlight()
       }
     }
 
     else if (this.phase == Phase.TAXI_OUT) {
       if (data.speedIAS > 35 && data.heightFt < 500) {
         this.phase = Phase.TAKEOFF
+        this.flight.timeOff = Date.now()
+        this.saveFlight()
       }
       else if (this.aircraftIsOnGround() && this.aircraftIsStopped(data) && !this.aircraftEngineIsRunning(data)) {
         this.phase = Phase.RAMP
+        this.flight.timeIn = Date.now()
+        this.saveFlight()
       }
     }
 
     else if (this.phase == Phase.TAKEOFF) {
       if (data.verticalSpeedFTM > 150 && data.heightFt >= 500) {
         this.phase = Phase.CLIMB
+        this.flight.timeOff = Date.now()
+        this.saveFlight()
       }
       if (data.verticalSpeedFTM < -150 && data.heightFt < 500) {
         this.phase = Phase.LANDING
@@ -111,6 +146,8 @@ class Recorder {
     else if (this.phase == Phase.LANDING) {
       if (this.aircraftIsOnGround() && data.speedGS < 35) {
         this.phase = Phase.TAXI_IN
+        this.flight.timeOn = Date.now()
+        this.saveFlight()
       }
       else if (data.verticalSpeedFTM > 150 && data.heightFt >= 500) {
         this.phase = Phase.CLIMB
@@ -118,8 +155,12 @@ class Recorder {
     }
 
     else if (this.phase == Phase.TAXI_IN) {
-      if (this.aircraftIsOnGround() && !this.aircraftEngineIsRunning(data) && this.aircraftIsStopped(data)) {
-        this.phase = Phase.RAMP
+      if (this.aircraftIsOnGround() &&
+        !this.aircraftEngineIsRunning(data) &&
+        this.aircraftIsStopped(data)) {
+          this.phase = Phase.RAMP
+          this.flight.timeIn = Date.now()
+          this.saveFlight()
       }
       if (data.speedIAS > 35 && data.heightFt < 500 && data.verticalSpeedFTM > 150) {
         this.phase = Phase.TAKEOFF
