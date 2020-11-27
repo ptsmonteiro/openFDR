@@ -1,3 +1,5 @@
+const {ipcMain} = require('electron')
+
 const util = require('util')
 const Flight = require('./flight')
 
@@ -40,6 +42,7 @@ class Recorder {
   startRecording(data) {
     this.flight = new Flight(this.flightDb, data)
     this.saveFlight()
+    ipcMain.emit('recording-started')
     this.isRecording = true
   }
 
@@ -50,6 +53,7 @@ class Recorder {
     this.flight.totalFlightTime = (this.flight.timeOn - this.flight.timeOff) / 1000 / 3600
     this.flight.fuelIn = data.fuelQuantityKg
     this.flight.usedFuel = this.flight.fuelOut - this.flight.fuelIn
+    ipcMain.emit('recording-stopped')
     this.isRecording = false
   }
 

@@ -40,3 +40,39 @@ ipcRenderer.on('xplane-disconnected', (event, data) => {
   span.innerHTML = 'X-Plane not connected'
   span.class = 'label label-error'
 })
+
+ipcRenderer.on('flight-list', (event, flights) => {
+  // Clear list
+  for (const tr of document.querySelectorAll("#recorded-flights tr")) {
+    tr.remove()
+  }
+
+  // Populate list
+  const t = document.querySelector("template.flight-entry")
+  for (const f of flights) {
+    const newFlight = t.content.cloneNode(true)
+    newFlight.querySelector("tr").dataset.flightId = f.id
+    const d = new Date(f.timeOut)
+    newFlight.querySelector("td.flight-date").innerHTML = d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDay()
+    newFlight.querySelector("td.flight-time").innerHTML = d.getUTCHours() + ':' + d.getUTCMinutes()
+    newFlight.querySelector("td.flight-number").innerHTML = f.number || 'N/A'
+    newFlight.querySelector("td.flight-aircraft").innerHTML = f.aircraftType || 'N/A'
+    newFlight.querySelector("td.flight-departure").innerHTML = f.departure || 'N/A'
+    newFlight.querySelector("td.flight-destination").innerHTML = f.destination || 'N/A'
+    newFlight.querySelector("td.flight-duration").innerHTML = f.totalBlockTime.toFixed(1) || 'N/A'
+
+    let status
+    if (f.sent) {
+      status = 'Sent'
+    }
+    else if (f.number && f.departure && f.destination && f.alternate && f.route) {
+      status = 'Ready to Send'
+    }
+    else {
+      status = 'Incomplete'
+    }
+    newFlight.querySelector("td.flight-status").innerHTML = status
+
+    t.parentNode.appendChild(newFlight)
+  }
+})

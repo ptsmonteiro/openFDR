@@ -48,6 +48,7 @@
       <thead>
         <tr>
           <th>Date</th>
+          <th>Time (UTC)</th>
           <th>Number</th>
           <th>Aircraft</th>
           <th>Origin</th>
@@ -57,42 +58,18 @@
         </tr>
       </thead>
       <tbody id="recorded-flights">
-        <tr data-flight-id="45398">
-          <td>14 Nov 2020, 13h32</td>
-          <td>N/A</td>
-          <td>A320</td>
-          <td>LFPO</td>
-          <td>N/A</td>
-          <td>N/A</td>
-          <td>Recording</td>
-        </tr>
-        <tr data-flight-id="023948">
-          <td>12 Nov 2020, 10h00</td>
-          <td>N/A</td>
-          <td>A320</td>
-          <td>LFPO</td>
-          <td>N/A</td>
-          <td>N/A</td>
-          <td>Interruped</td>
-        </tr>
-        <tr data-flight-id="43598">
-          <td>10 Nov 2020, 10h10</td>
-          <td>EJU123</td>
-          <td>A320</td>
-          <td>LFPO</td>
-          <td>LFPG</td>
-          <td>0:40</td>
-          <td>Completed</td>
-        </tr>
-        <tr data-flight-id="54634">
-          <td>3 Nov 2020, 07h15</td>
-          <td>ZE1234</td>
-          <td>A320</td>
-          <td>LEMD</td>
-          <td>LIMC</td>
-          <td>1:50</td>
-          <td>Synced</td>
-        </tr>
+        <template class="flight-entry">
+          <tr data-flight-id="">
+            <td class="flight-date"></td>
+            <td class="flight-time"></td>
+            <td class="flight-number"></td>
+            <td class="flight-aircraft"></td>
+            <td class="flight-departure"></td>
+            <td class="flight-destination"></td>
+            <td class="flight-duration"></td>
+            <td class="flight-status"></td>
+          </tr>
+        </template>
       </tbody>
     </table>
   </div>

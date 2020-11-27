@@ -61,6 +61,12 @@ function setupSettings(parentWindow) {
   })
 }
 
+function loadFlights(mainWindow) {
+  db.flights.find({}, (err, docs) => {
+    mainWindow.webContents.send('flight-list', docs)
+  })
+}
+
 function setupFlightDetails(parentWindow) {
   let flightWindow
   ipcMain.on('open-flight', () => {
@@ -134,8 +140,18 @@ app.whenReady().then(() => {
     recorder.update(data)
   })
 
+  ipcMain.on('recording-started', (data) => {
+    loadFlights(mainWindow)
+  })
+  ipcMain.on('recording-stopped', (data) => {
+    loadFlights(mainWindow)
+  })
+
   setupSettings(mainWindow)
+
+  loadFlights(mainWindow)
   setupFlightDetails(mainWindow)
+
   setupNetwork()
 
   app.on('activate', function () {

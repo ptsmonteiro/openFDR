@@ -9,9 +9,10 @@ class Flight {
     this.destination = ''
     this.alternate = ''
     this.route = ''
+    this.onlineNetwork = ''
 
     // times
-    this.timeOut = 0
+    this.timeOut = Date.now()
     this.timeOff = 0
     this.timeOn = 0
     this.timeIn = 0
