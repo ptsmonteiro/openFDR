@@ -69,7 +69,7 @@ function loadFlights(mainWindow) {
 
 function setupFlightDetails(parentWindow) {
   let flightWindow
-  ipcMain.on('open-flight', () => {
+  ipcMain.on('open-flight', (event, id) => {
     if (flightWindow) return
     flightWindow = new BrowserWindow({
       webPreferences: { nodeIntegration: true, enableRemoteModule: true},
@@ -81,10 +81,23 @@ function setupFlightDetails(parentWindow) {
     })
     flightWindow.loadFile('flight_form.html')
     flightWindow.once('ready-to-show', () => {
-      flightWindow.show()
+      db.flights.findOne({id: id}, (err, doc) => {
+        flightWindow.webContents.send('flight-data', doc)
+        flightWindow.show()
+      })
     })
     flightWindow.on('closed', () => {
       flightWindow = null
+      loadFlights(parentWindow)
+    })
+  })
+
+  ipcMain.on('flight-data-merge', (event, data) => {
+    console.log('updating flight details for ' + data.id)
+    db.flights.update({id: data.id}, {$set: data}, {}, (err, affected) => {
+      if (affected) { console.log('flight updated') }
+      if (err) { console.log('error ' + err) }
+      flightWindow.close()
     })
   })
 }

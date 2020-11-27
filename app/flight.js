@@ -9,6 +9,7 @@ class Flight {
     this.destination = ''
     this.alternate = ''
     this.route = ''
+    this.remarks = ''
     this.onlineNetwork = ''
 
     // times

@@ -14,7 +14,7 @@
     <h1>Flight Details</h1>
 
     <form class="form-horizontal">
-
+      <input type="hidden" name="id">
       <div class="form-group">
         <div class="col-3 col-sm-12">
           <label class="form-label" for="inputFlightNumber">Flight Number</label>
@@ -32,6 +32,10 @@
           <label class="form-label" for="inputArrival">Arrival</label>
           <input class="form-input" id="inputArrival" type="text" placeholder="ICAO 4 letter">
         </div>
+        <div class="col-3 col-sm-12">
+          <label class="form-label" for="inputAlternate">Alternate</label>
+          <input class="form-input" id="inputAlternate" type="text" placeholder="ICAO 4 letter">
+        </div>
       </div>
 
       <div class="form-group">
@@ -43,7 +47,7 @@
         <textarea class="form-input" id="inputRemarks" type="text" placeholder="Enter your remarks/comments"></textarea>
       </div>
       <div class="form-group">
-        <button id="okBtn" type="button" class="btn">Ok</button>
+        <button id="okBtn" type="submit" class="btn">Ok</button>
         <button id="cancelBtn" type="button" class="btn">Cancel</button>
       </div>
     </form>

@@ -7,7 +7,7 @@ document.getElementById('configBtn').addEventListener('click', () => {
 })
 
 document.getElementById('recorded-flights').addEventListener('click', (ev) => {
-  ipcRenderer.send('open-flight', {id: ev.target.parentNode.dataset.flightId})
+  ipcRenderer.send('open-flight', ev.target.parentNode.dataset.flightId)
 })
 
 function updateStateParam(id, value) {
@@ -66,7 +66,7 @@ ipcRenderer.on('flight-list', (event, flights) => {
       status = 'Sent'
     }
     else if (f.number && f.departure && f.destination && f.alternate && f.route) {
-      status = 'Ready to Send'
+      status = 'Complete'
     }
     else {
       status = 'Incomplete'
