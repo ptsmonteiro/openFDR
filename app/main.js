@@ -98,7 +98,7 @@ function setupNetwork() {
           // Received data is available in `buf` from 0 to `nread`.
         //  console.log(buf.toString('utf8', 0, nread))
           const dataPoint = JSON.parse(buf.toString('utf8', 0, nread))
-          console.log(util.inspect(dataPoint))
+          //console.log(util.inspect(dataPoint))
           ipcMain.emit('datapoint-received', dataPoint)
         }
       }

@@ -45,6 +45,11 @@ class Recorder {
 
   stopRecording(data) {
     this.saveFlight()
+    this.flight.timeIn = Date.now()
+    this.flight.totalBlockTime = (this.flight.timeIn - this.flight.timeOut) / 1000 / 3600
+    this.flight.totalFlightTime = (this.flight.timeOn - this.flight.timeOff) / 1000 / 3600
+    this.flight.fuelIn = data.fuelQuantityKg
+    this.flight.usedFuel = this.flight.fuelOut - this.flight.fuelIn
     this.isRecording = false
   }
 
@@ -82,6 +87,7 @@ class Recorder {
 
     if (this.isRecording) {
       this.saveData(data)
+      this.updatePhase(data)
     }
   }
 
@@ -95,6 +101,7 @@ class Recorder {
       if (this.aircraftEngineIsRunning(data) && !this.aircraftIsStopped(data)) {
         this.phase = Phase.TAXI_OUT
         this.flight.timeOut = Date.now()
+        this.flight.fuelOut = data.fuelQuantityKg
         this.saveFlight()
       }
     }
@@ -103,40 +110,41 @@ class Recorder {
       if (data.speedIAS > 35 && data.heightFt < 500) {
         this.phase = Phase.TAKEOFF
         this.flight.timeOff = Date.now()
+        this.flight.fuelOff = data.fuelQuantityKg
         this.saveFlight()
       }
-      else if (this.aircraftIsOnGround() && this.aircraftIsStopped(data) && !this.aircraftEngineIsRunning(data)) {
+      else if (this.aircraftIsOnGround(data) && this.aircraftIsStopped(data) && !this.aircraftEngineIsRunning(data)) {
         this.phase = Phase.RAMP
-        this.flight.timeIn = Date.now()
         this.saveFlight()
       }
     }
 
     else if (this.phase == Phase.TAKEOFF) {
-      if (data.verticalSpeedFTM > 150 && data.heightFt >= 500) {
+      if (data.verticalSpeedFPM > 150 && data.heightFt >= 500) {
         this.phase = Phase.CLIMB
         this.flight.timeOff = Date.now()
+        this.flight.fuelOff = data.fuelQuantityKg
         this.saveFlight()
       }
-      if (data.verticalSpeedFTM < -150 && data.heightFt < 500) {
+      if (data.verticalSpeedFPM < -150 && data.heightFt < 500) {
         this.phase = Phase.LANDING
       }
     }
 
     else if (this.phase == Phase.CLIMB) {
-      if (abs(data.verticalSpeedFTM) < 150) {
+      if (Math.abs(data.verticalSpeedFPM) < 150) {
         this.phase = Phase.CRUISE
       }
-      else if (data.verticalSpeedFTM < -150) {
+      else if (data.verticalSpeedFPM < -150) {
         this.phase = Phase.DESCENT
       }
     }
 
     else if (this.phase == Phase.CRUISE) {
-      if (data.verticalSpeedFTM > 150) {
+      if (data.verticalSpeedFPM > 150) {
         this.phase = Phase.CLIMB
       }
-      else if (data.verticalSpeedFTM < -150) {
+      else if (data.verticalSpeedFPM < -150) {
         this.phase = Phase.DESCENT
       }
     }
@@ -148,25 +156,28 @@ class Recorder {
     }
 
     else if (this.phase == Phase.LANDING) {
-      if (this.aircraftIsOnGround() && data.speedGS < 35) {
+      if (this.aircraftIsOnGround(data) && data.speedGS < 35) {
         this.phase = Phase.TAXI_IN
         this.flight.timeOn = Date.now()
+        this.flight.fuelOn = data.fuelQuantityKg
+        this.flight.destination = data.nearestAirportId
         this.saveFlight()
       }
-      else if (data.verticalSpeedFTM > 150 && data.heightFt >= 500) {
+      else if (data.verticalSpeedFPM > 150 && data.heightFt >= 500) {
         this.phase = Phase.CLIMB
       }
     }
 
     else if (this.phase == Phase.TAXI_IN) {
-      if (this.aircraftIsOnGround() &&
+      if (this.aircraftIsOnGround(data) &&
         !this.aircraftEngineIsRunning(data) &&
         this.aircraftIsStopped(data)) {
           this.phase = Phase.RAMP
           this.flight.timeIn = Date.now()
+          this.flight.fuelIn = data.fuelQuantityKg
           this.saveFlight()
       }
-      if (data.speedIAS > 35 && data.heightFt < 500 && data.verticalSpeedFTM > 150) {
+      if (data.speedIAS > 35 && data.heightFt < 500 && data.verticalSpeedFPM > 150) {
         this.phase = Phase.TAKEOFF
       }
     }

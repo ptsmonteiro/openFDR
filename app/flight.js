@@ -4,10 +4,11 @@ class Flight {
     // general
     this.id = this.idFromData(data)
     this.number = ''
-    this.aircraftType = ''
-    this.departure = ''
+    this.aircraftType = data.aircraftType
+    this.departure = data.nearestAirportId
     this.destination = ''
     this.alternate = ''
+    this.route = ''
 
     // times
     this.timeOut = 0
@@ -17,12 +18,16 @@ class Flight {
     this.totalBlockTime = 0
     this.totalFlightTime = 0
 
+    // fuel
+    this.fuelOut = 0
+    this.fuelOff = 0
+    this.fuelOn = 0
+    this.fuelIn = 0
+    this.usedFuel = 0
+
     // weights
-    this.dryOperatingWeight = 0
-    this.payloadWeight = 0
-    this.totalBlockOffWeight = 0
-    this.totalBlockOnWeight = 0
-    this.usedFuelWeight = 0
+    this.totalWeight = data.totalWeight
+    this.payloadWeight = data.payloadWeight
 
     // flight report sent
     this.sent = false
