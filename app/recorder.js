@@ -55,7 +55,6 @@ class Recorder {
     this.dataDb.insert(d, (err, doc) => {
       if (err) { console.log('error saving data snapshot: ' + err) }
     })
-
   }
 
   saveFlight() {
@@ -80,6 +79,7 @@ class Recorder {
       !this.aircraftIsCrashed(data)) {
         this.startRecording(data)
     }
+
     if (this.isRecording) {
       this.saveData(data)
     }
