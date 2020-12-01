@@ -22,7 +22,7 @@ The data model is very simple. There are *flights* and
 Flights might only have partial data at a given point, however, the Virtual Airline
 should define it's own rules on approving a flight and should check the flight data in order to do so.
 
-#### Flight {#flight}
+#### <a id="flight"></a>Flight
 ```json
 {
   "id": "LFPO.LPPT.202005301011.A320.7124",
@@ -48,7 +48,7 @@ should define it's own rules on approving a flight and should check the flight d
 }
 ```
 
-#### Recording Sample {#recording-sample}
+#### <a id="recording-sample"></a>Recording Sample
 ```json
 {
   "simulatorVersion": 115033,
