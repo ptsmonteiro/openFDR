@@ -59,17 +59,20 @@ ipcRenderer.on('flight-list', (event, flights) => {
     newFlight.querySelector("td.flight-aircraft").innerHTML = f.aircraftType || 'N/A'
     newFlight.querySelector("td.flight-departure").innerHTML = f.departure || 'N/A'
     newFlight.querySelector("td.flight-destination").innerHTML = f.destination || 'N/A'
-    newFlight.querySelector("td.flight-duration").innerHTML = f.totalBlockTime.toFixed(1) || 'N/A'
+    newFlight.querySelector("td.flight-duration").innerHTML = f.totalBlockTime.toFixed(2) || 'N/A'
 
     let status
-    if (f.sent) {
-      status = 'Sent'
+    if (!f.timeIn || !f.timeOff || !f.timeOn || !f.timeIn) {
+      status = 'Interrupted'
     }
-    else if (f.number && f.departure && f.destination && f.alternate && f.route) {
-      status = 'Complete'
+    else if (!f.number || !f.departure || !f.destination || !f.alternate || !f.route) {
+      status = 'Information Missing'
+    }
+    else if (!f.sent) {
+      status = 'Ready to Send'
     }
     else {
-      status = 'Incomplete'
+      status = 'Sent'
     }
     newFlight.querySelector("td.flight-status").innerHTML = status
 

@@ -10,6 +10,7 @@ ipcRenderer.on('flight-data', (event, doc) => {
   form.elements.inputType.value = doc.aircraftType
   form.elements.inputDeparture.value = doc.departure
   form.elements.inputArrival.value = doc.destination
+  form.elements.inputAlternate.value = doc.alternate
   form.elements.inputRoute.value = doc.route
   form.elements.inputRemarks.value = doc.remarks
 })

@@ -63,6 +63,8 @@ function setupSettings(parentWindow) {
 
 function loadFlights(mainWindow) {
   db.flights.find({}, (err, docs) => {
+    if (err) { console.log('error ' + err) }
+    console.log('got documents: ' + util.inspect(docs))
     mainWindow.webContents.send('flight-list', docs)
   })
 }
@@ -162,8 +164,8 @@ app.whenReady().then(() => {
 
   setupSettings(mainWindow)
 
-  loadFlights(mainWindow)
   setupFlightDetails(mainWindow)
+  setTimeout(() => {loadFlights(mainWindow)}, 3000)
 
   setupNetwork()
 
