@@ -18,7 +18,7 @@ const CONNECTION_RETRY_TIME = 2
 
 function createWindow () {
   const mainWindow = new BrowserWindow({
-    width: 700,
+    width: 800,
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
@@ -155,8 +155,9 @@ app.whenReady().then(() => {
 
   mainWindow.once('ready-to-show', () => {
     ipcMain.on('datapoint-received', (data) => {
-      mainWindow.webContents.send('state-update', data)
       recorder.update(data)
+      mainWindow.webContents.send('state-update', data)
+      mainWindow.webContents.send('recording-state', {recording: recorder.isRecording})
     })
 
     ipcMain.on('recording-started', (data) => {

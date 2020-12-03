@@ -42,6 +42,18 @@ ipcRenderer.on('connection-state-changed', (event, status) => {
   }
 })
 
+ipcRenderer.on('recording-state', (event, status) => {
+  const span = document.getElementById('span-recorder')
+  if (status.recording) {
+    span.innerHTML = 'Recording flight'
+    span.className = 'label label-error'
+
+  } else {
+    span.innerHTML = 'Recorder not active'
+    span.className = 'label label-warning'
+  }
+})
+
 ipcRenderer.on('flight-list', (event, flights) => {
   // Clear list
   for (const tr of document.querySelectorAll("#recorded-flights tr")) {
