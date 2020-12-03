@@ -62,7 +62,7 @@ function setupSettings(parentWindow) {
 }
 
 function loadFlights(mainWindow) {
-  db.flights.find({}, (err, docs) => {
+  db.flights.find({}).sort({timeOut: -1}).exec((err, docs) => {
     if (err) { console.log('error ' + err) }
     console.log('got documents: ' + util.inspect(docs))
     mainWindow.webContents.send('flight-list', docs)
@@ -104,7 +104,7 @@ function setupFlightDetails(parentWindow) {
   })
 }
 
-function setupNetwork() {
+function setupNetwork(mainWindow) {
   db.config.findOne({}, (err, doc) => {
 
     const ip = (err || !doc) ? '127.0.0.1' : doc.ip
@@ -117,28 +117,31 @@ function setupNetwork() {
         buffer: Buffer.alloc(4 * 1024),
         callback: function(nread, buf) {
           // Received data is available in `buf` from 0 to `nread`.
-        //  console.log(buf.toString('utf8', 0, nread))
           const dataPoint = JSON.parse(buf.toString('utf8', 0, nread))
           //console.log(util.inspect(dataPoint))
           ipcMain.emit('datapoint-received', dataPoint)
         }
       }
     })
+    client.on('connect', () => {
+      ipcMain.emit('connection-state-changed', {connected: true})
+      console.log('network connected')
+    })
 
     client.on('error', (err) => {
       console.log('network error: ' + err)
     })
     client.on('end', () => {
-      ipcMain.emit('xplane-disconnected')
+      ipcMain.emit('connection-state-changed', {connected: false})
       console.log('x-plane connection ended')
     })
     client.on('close', () => {
-      ipcMain.emit('xplane-disconnected')
+      ipcMain.emit('connection-state-changed', {connected: false})
       console.log('x-plane connection closed')
       setTimeout(setupNetwork, CONNECTION_RETRY_TIME * 1000)
     })
     client.on('connection', () => {
-      ipcMain.emit('xplane-connected')
+      ipcMain.emit('connection-state-changed', {connected: false})
       console.log('x-plane connection established')
     })
 
@@ -150,24 +153,29 @@ app.whenReady().then(() => {
   const mainWindow = createWindow()
   const recorder = new Recorder(db.flights, db.data)
 
-  ipcMain.on('datapoint-received', (data) => {
-    mainWindow.webContents.send('state-update', data)
-    recorder.update(data)
-  })
+  mainWindow.once('ready-to-show', () => {
+    ipcMain.on('datapoint-received', (data) => {
+      mainWindow.webContents.send('state-update', data)
+      recorder.update(data)
+    })
 
-  ipcMain.on('recording-started', (data) => {
+    ipcMain.on('recording-started', (data) => {
+      loadFlights(mainWindow)
+    })
+    ipcMain.on('recording-stopped', (data) => {
+      loadFlights(mainWindow)
+    })
+
+    setupSettings(mainWindow)
+
+    setupFlightDetails(mainWindow)
     loadFlights(mainWindow)
+
+    ipcMain.on('connection-state-changed', (status) => {
+      mainWindow.webContents.send('connection-state-changed', status)
+    })
+    setupNetwork(mainWindow)
   })
-  ipcMain.on('recording-stopped', (data) => {
-    loadFlights(mainWindow)
-  })
-
-  setupSettings(mainWindow)
-
-  setupFlightDetails(mainWindow)
-  setTimeout(() => {loadFlights(mainWindow)}, 3000)
-
-  setupNetwork()
 
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()

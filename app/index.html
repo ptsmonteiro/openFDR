@@ -13,7 +13,7 @@
   <div class="container">
     <h1>Status</h1>
     <p>
-      <span id="span-xplane" class="label label-error">X-Plane not connected</span>
+      <span id="span-xplane" class="label label-error"></span>
       <span id="span-acars" class="label label-warning">Live ACARS not active</span>
       <span id="span-recorder" class="label label-warning">Recorder not active</span>
     </p>
@@ -44,6 +44,7 @@
   <div class="container">
     <h1>Recorded Flights</h1>
     <button id="syncBtn" type="button" class="btn">Sync Completed Flights</button>
+    <button id="clearBtn" type="button" class="btn" alt="Clear interrupted and sent flights">Clear</button>
     <table class="table table-hover">
       <thead>
         <tr>
@@ -53,7 +54,8 @@
           <th>Aircraft</th>
           <th>Origin</th>
           <th>Destination</th>
-          <th>Duration</th>
+          <th>Hours</th>
+          <th>Fuel (kg)</th>
           <th>State</th>
         </tr>
       </thead>
@@ -67,13 +69,14 @@
             <td class="flight-departure"></td>
             <td class="flight-destination"></td>
             <td class="flight-duration"></td>
+            <td class="flight-fuel"></td>
             <td class="flight-status"></td>
           </tr>
         </template>
       </tbody>
     </table>
   </div>
-  
+
   <!-- You can also require other files to run in this process -->
   <script src="./index.js"></script>
 </body>

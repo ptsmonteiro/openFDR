@@ -19,6 +19,7 @@
     "electron": "^10.1.5"
   },
   "dependencies": {
+    "dateformat": "^4.0.0",
     "electron-store": "^6.0.1",
     "nedb": "^1.8.0",
     "spectre.css": "^0.5.9"

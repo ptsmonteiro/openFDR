@@ -1,6 +1,7 @@
 'use strict'
 
 const { ipcRenderer } = require('electron')
+const dateFormat = require('dateformat')
 
 document.getElementById('configBtn').addEventListener('click', () => {
   ipcRenderer.send('open-settings')
@@ -29,16 +30,16 @@ ipcRenderer.on('state-update', (event, data) => {
   updateStateParam('span-vs', data.verticalSpeedFPM)
 })
 
-ipcRenderer.on('xplane-connected', (event, data) => {
+ipcRenderer.on('connection-state-changed', (event, status) => {
   const span = document.getElementById('span-xplane')
-  span.innerHTML = 'X-Plane connected'
-  span.class = 'label label-success'
-})
+  if (status.connected) {
+    span.innerHTML = 'X-Plane connected'
+    span.className = 'label label-success'
 
-ipcRenderer.on('xplane-disconnected', (event, data) => {
-  const span = document.getElementById('span-xplane')
-  span.innerHTML = 'X-Plane not connected'
-  span.class = 'label label-error'
+  } else {
+    span.innerHTML = 'X-Plane not connected'
+    span.className = 'label label-error'
+  }
 })
 
 ipcRenderer.on('flight-list', (event, flights) => {
@@ -53,13 +54,14 @@ ipcRenderer.on('flight-list', (event, flights) => {
     const newFlight = t.content.cloneNode(true)
     newFlight.querySelector("tr").dataset.flightId = f.id
     const d = new Date(f.timeOut)
-    newFlight.querySelector("td.flight-date").innerHTML = d.getUTCFullYear() + '-' + d.getUTCMonth() + '-' + d.getUTCDay()
-    newFlight.querySelector("td.flight-time").innerHTML = d.getUTCHours() + ':' + d.getUTCMinutes()
+    newFlight.querySelector("td.flight-date").innerHTML = dateFormat(d, "UTC:yyyy-mm-dd")
+    newFlight.querySelector("td.flight-time").innerHTML = dateFormat(d, "UTC:hh:MM")
     newFlight.querySelector("td.flight-number").innerHTML = f.number || 'N/A'
     newFlight.querySelector("td.flight-aircraft").innerHTML = f.aircraftType || 'N/A'
     newFlight.querySelector("td.flight-departure").innerHTML = f.departure || 'N/A'
     newFlight.querySelector("td.flight-destination").innerHTML = f.destination || 'N/A'
     newFlight.querySelector("td.flight-duration").innerHTML = f.totalBlockTime.toFixed(2) || 'N/A'
+    newFlight.querySelector("td.flight-fuel").innerHTML = f.usedFuel || 'N/A'
 
     let status
     if (!f.timeIn || !f.timeOff || !f.timeOn || !f.timeIn) {
