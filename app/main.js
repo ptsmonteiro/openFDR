@@ -69,6 +69,46 @@ function loadFlights(mainWindow) {
   })
 }
 
+function clearFlights() {
+  return new Promise((resolve, reject) => {
+    db.flights.find({}).sort({timeOut: -1}).exec((err, flights) => {
+      if(err) {
+        resolve(err)
+      }
+      else {
+        let toRemove = []
+        for (const f of flights) {
+          if (!f.timeIn || !f.timeOff) {
+            // skip the unfinished still recording flight
+            if (f.id === flights[0].id && recorder.isRecording) {
+              console.log('Skipping flight ' + f.id)
+              continue
+            }
+            toRemove.push(f.id)
+          }
+          else if (f.sent) {
+            toRemove.push(f.id)
+          }
+        }
+        console.log('Removing flights: ' + util.inspect(toRemove))
+        db.flights.remove({id: {$in: toRemove}}, {multi: true}, (err, nrRemoved) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(nrRemoved)
+          }
+        })
+      }
+    })
+  })
+}
+
+function syncFlights() {
+  return new Promise((resolve, reject) => {
+
+  })
+}
+
 function setupFlightDetails(parentWindow) {
   let flightWindow
   ipcMain.on('open-flight', (event, id) => {
@@ -156,14 +196,14 @@ app.whenReady().then(() => {
   mainWindow.once('ready-to-show', () => {
     ipcMain.on('datapoint-received', (data) => {
       recorder.update(data)
-      mainWindow.webContents.send('state-update', data)
-      mainWindow.webContents.send('recording-state', {recording: recorder.isRecording})
     })
 
-    ipcMain.on('recording-started', (data) => {
+    ipcMain.on('recording-started', () => {
+      mainWindow.webContents.send('record-state-update', {recording: true})
       loadFlights(mainWindow)
     })
-    ipcMain.on('recording-stopped', (data) => {
+    ipcMain.on('recording-stopped', () => {
+      mainWindow.webContents.send('recording-state-update', {recording: false})
       loadFlights(mainWindow)
     })
 
@@ -171,6 +211,19 @@ app.whenReady().then(() => {
 
     setupFlightDetails(mainWindow)
     loadFlights(mainWindow)
+
+    ipcMain.on('sync-flights', () => {
+      //mainWindow.webContents.send('recording-state-update', {recording: false})
+      syncFlights(() => {
+        loadFlights(mainWindow)
+      })
+    })
+    ipcMain.on('clear-flights', () => {
+      //mainWindow.webContents.send('recording-state-update', {recording: false})
+      clearFlights().then(() => {
+        loadFlights(mainWindow)
+      })
+    })
 
     ipcMain.on('connection-state-changed', (status) => {
       mainWindow.webContents.send('connection-state-changed', status)

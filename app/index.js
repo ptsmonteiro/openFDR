@@ -11,6 +11,14 @@ document.getElementById('recorded-flights').addEventListener('click', (ev) => {
   ipcRenderer.send('open-flight', ev.target.parentNode.dataset.flightId)
 })
 
+document.getElementById('syncBtn').addEventListener('click', (ev) => {
+  ipcRenderer.send('sync-flights')
+})
+
+document.getElementById('clearBtn').addEventListener('click', (ev) => {
+  ipcRenderer.send('clear-flights')
+})
+
 function updateStateParam(id, value) {
   document.getElementById(id).innerHTML = value
 }
@@ -42,7 +50,7 @@ ipcRenderer.on('connection-state-changed', (event, status) => {
   }
 })
 
-ipcRenderer.on('recording-state', (event, status) => {
+ipcRenderer.on('recording-state-update', (event, status) => {
   const span = document.getElementById('span-recorder')
   if (status.recording) {
     span.innerHTML = 'Recording flight'
