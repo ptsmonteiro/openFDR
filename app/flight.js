@@ -13,7 +13,7 @@ class Flight {
     this.onlineNetwork = ''
 
     // times
-    this.timeOut = Date.now()
+    this.timeOut = Math.floor(Date.now()/1000)
     this.timeOff = 0
     this.timeOn = 0
     this.timeIn = 0
@@ -36,7 +36,7 @@ class Flight {
   }
 
   idFromData(data) {
-    let id = Date.now() + '.' + data.nearestAirportId + '.' + data.aircraftType
+    let id = Math.floor(Date.now()/1000) + '.' + data.nearestAirportId + '.' + data.aircraftType
     return id
   }
 

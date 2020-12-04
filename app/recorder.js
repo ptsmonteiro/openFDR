@@ -42,17 +42,18 @@ class Recorder {
   startRecording(data) {
     this.flight = new Flight(this.flightDb, data)
     this.saveFlight()
-    ipcMain.emit('recording-started')
+    this.phase = Phase.RAMP
     this.isRecording = true
+    ipcMain.emit('recording-started')
   }
 
   stopRecording(data) {
-    this.saveFlight()
-    this.flight.timeIn = Date.now()
-    this.flight.totalBlockTime = (this.flight.timeIn - this.flight.timeOut) / 1000 / 3600
-    this.flight.totalFlightTime = (this.flight.timeOn - this.flight.timeOff) / 1000 / 3600
+    this.flight.timeIn = Math.floor(Date.now()/1000)
+    this.flight.totalBlockTime = Math.floor((this.flight.timeIn - this.flight.timeOut) / 3600)
+    this.flight.totalFlightTime = Math.floor((this.flight.timeOn - this.flight.timeOff) / 3600)
     this.flight.fuelIn = data.fuelQuantityKg
     this.flight.usedFuel = this.flight.fuelOut - this.flight.fuelIn
+    this.saveFlight()
     ipcMain.emit('recording-stopped')
     this.isRecording = false
   }
@@ -74,12 +75,17 @@ class Recorder {
   }
 
   update(data) {
-    // Recording will stop when stopped on ground with engines turned off
-    if (this.isRecording &&
-      this.aircraftIsOnGround(data) &&
-      this.aircraftIsStopped(data) &&
-      (!this.aircraftEngineIsRunning(data) || this.aircraftIsCrashed(data))) {
-        this.stopRecording(data)
+    if (this.isRecording) {
+      this.saveData(data)
+      this.updatePhase(data)
+
+      // Recording will stop when stopped on ground with engines turned off or if crashed
+      if (this.aircraftIsOnGround(data) &&
+        this.aircraftIsStopped(data) &&
+        (!this.aircraftEngineIsRunning(data) || this.aircraftIsCrashed(data))) {
+          this.stopRecording(data)
+      }
+
     }
     // Recording will start when the first engine is started on ground
     else if (!this.isRecording &&
@@ -87,11 +93,6 @@ class Recorder {
       this.aircraftEngineIsRunning(data) &&
       !this.aircraftIsCrashed(data)) {
         this.startRecording(data)
-    }
-
-    if (this.isRecording) {
-      this.saveData(data)
-      this.updatePhase(data)
     }
   }
 
@@ -104,7 +105,7 @@ class Recorder {
     if (this.phase == Phase.RAMP) {
       if (this.aircraftEngineIsRunning(data) && !this.aircraftIsStopped(data)) {
         this.phase = Phase.TAXI_OUT
-        this.flight.timeOut = Date.now()
+        this.flight.timeOut = Math.floor(Date.now()/1000)
         this.flight.fuelOut = data.fuelQuantityKg
         this.saveFlight()
       }
@@ -113,7 +114,7 @@ class Recorder {
     else if (this.phase == Phase.TAXI_OUT) {
       if (data.speedIAS > 35 && data.heightFt < 500) {
         this.phase = Phase.TAKEOFF
-        this.flight.timeOff = Date.now()
+        this.flight.timeOff = Math.floor(Date.now()/1000)
         this.flight.fuelOff = data.fuelQuantityKg
         this.saveFlight()
       }
@@ -126,7 +127,7 @@ class Recorder {
     else if (this.phase == Phase.TAKEOFF) {
       if (data.verticalSpeedFPM > 150 && data.heightFt >= 500) {
         this.phase = Phase.CLIMB
-        this.flight.timeOff = Date.now()
+        this.flight.timeOff = Math.floor(Date.now()/1000)
         this.flight.fuelOff = data.fuelQuantityKg
         this.saveFlight()
       }
@@ -162,7 +163,7 @@ class Recorder {
     else if (this.phase == Phase.LANDING) {
       if (this.aircraftIsOnGround(data) && data.speedGS < 35) {
         this.phase = Phase.TAXI_IN
-        this.flight.timeOn = Date.now()
+        this.flight.timeOn = Math.floor(Date.now()/1000)
         this.flight.fuelOn = data.fuelQuantityKg
         this.flight.destination = data.nearestAirportId
         this.saveFlight()
@@ -177,7 +178,7 @@ class Recorder {
         !this.aircraftEngineIsRunning(data) &&
         this.aircraftIsStopped(data)) {
           this.phase = Phase.RAMP
-          this.flight.timeIn = Date.now()
+          this.flight.timeIn = Math.floor(Date.now()/1000)
           this.flight.fuelIn = data.fuelQuantityKg
           this.saveFlight()
       }

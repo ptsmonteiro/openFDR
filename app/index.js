@@ -73,7 +73,7 @@ ipcRenderer.on('flight-list', (event, flights) => {
   for (const f of flights) {
     const newFlight = t.content.cloneNode(true)
     newFlight.querySelector("tr").dataset.flightId = f.id
-    const d = new Date(f.timeOut)
+    const d = new Date(f.timeOut * 1000)
     newFlight.querySelector("td.flight-date").innerHTML = dateFormat(d, "UTC:yyyy-mm-dd")
     newFlight.querySelector("td.flight-time").innerHTML = dateFormat(d, "UTC:hh:MM")
     newFlight.querySelector("td.flight-number").innerHTML = f.number || 'N/A'

@@ -5,6 +5,7 @@ const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require('path')
 const net = require('net')
 const util = require('util')
+const axios = require('axios')
 const Recorder = require('./recorder')
 
 const Datastore = require('nedb')
@@ -64,7 +65,7 @@ function setupSettings(parentWindow) {
 function loadFlights(mainWindow) {
   db.flights.find({}).sort({timeOut: -1}).exec((err, docs) => {
     if (err) { console.log('error ' + err) }
-    console.log('got documents: ' + util.inspect(docs))
+    //console.log('got documents: ' + util.inspect(docs))
     mainWindow.webContents.send('flight-list', docs)
   })
 }
@@ -103,9 +104,35 @@ function clearFlights() {
   })
 }
 
-function syncFlights() {
+function syncFlights(config) {
+  const vaURL = config.url
   return new Promise((resolve, reject) => {
-
+    db.flights.find({}).sort({timeOut: 1}).exec(async (err, flights) => {
+      for (const f of flights) {
+        // TODO Better check required
+        if (f.sent || !f.timeOut && !f.timeOff) continue
+        console.log(`Submitting flight: ${f.id}`)
+        await axios({
+          method: 'post',
+          url: vaURL + '/flight',
+          data: { flight: f },
+          headers: {
+            'X-openFDR-Username': config.username,
+            'X-openFDR-Password': config.password
+          }
+        })
+          .then(res => {
+            console.log(util.inspect(res.data))
+            console.log(`Flight ${f.id} submitted sucessfully (server id '${res.data.data.id}')`)
+            //db.flights.update({ id:f.id }, { $set: { sent: 1 } }, {})
+          })
+          .catch(error => {
+            console.error(util.inspect(error.response.data))
+            reject(error)
+          })
+      }
+      resolve();
+    })
   })
 }
 
@@ -157,9 +184,14 @@ function setupNetwork(mainWindow) {
         buffer: Buffer.alloc(4 * 1024),
         callback: function(nread, buf) {
           // Received data is available in `buf` from 0 to `nread`.
-          const dataPoint = JSON.parse(buf.toString('utf8', 0, nread))
-          //console.log(util.inspect(dataPoint))
-          ipcMain.emit('datapoint-received', dataPoint)
+          const message = buf.toString('utf8', 0, nread)
+          try {
+            const dataPoint = JSON.parse(message)
+            //console.log(util.inspect(dataPoint))
+            ipcMain.emit('datapoint-received', dataPoint)
+          } catch (error) {
+              console.error(error)
+          }
         }
       }
     })
@@ -214,9 +246,16 @@ app.whenReady().then(() => {
 
     ipcMain.on('sync-flights', () => {
       //mainWindow.webContents.send('recording-state-update', {recording: false})
-      syncFlights(() => {
-        loadFlights(mainWindow)
+      db.config.findOne({}, (err, config) => {
+        syncFlights(config)
+          .then(() => {
+            loadFlights(mainWindow)
+          })
+          .catch((error) => {
+            console.error(`Flight sync failed: ${error}`)
+          })
       })
+
     })
     ipcMain.on('clear-flights', () => {
       //mainWindow.webContents.send('recording-state-update', {recording: false})
