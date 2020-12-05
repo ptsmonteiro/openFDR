@@ -185,6 +185,7 @@ function setupNetwork(mainWindow) {
         callback: function(nread, buf) {
           // Received data is available in `buf` from 0 to `nread`.
           const message = buf.toString('utf8', 0, nread)
+          //console.log(message)
           try {
             const dataPoint = JSON.parse(message)
             //console.log(util.inspect(dataPoint))
@@ -231,7 +232,7 @@ app.whenReady().then(() => {
     })
 
     ipcMain.on('recording-started', () => {
-      mainWindow.webContents.send('record-state-update', {recording: true})
+      mainWindow.webContents.send('recording-state-update', {recording: true})
       loadFlights(mainWindow)
     })
     ipcMain.on('recording-stopped', () => {

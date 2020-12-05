@@ -40,6 +40,7 @@ class Recorder {
   }
 
   startRecording(data) {
+    console.log('starting recording')
     this.flight = new Flight(this.flightDb, data)
     this.saveFlight()
     this.phase = Phase.RAMP
@@ -48,9 +49,10 @@ class Recorder {
   }
 
   stopRecording(data) {
+    console.log('stopping recording')
     this.flight.timeIn = Math.floor(Date.now()/1000)
-    this.flight.totalBlockTime = Math.floor((this.flight.timeIn - this.flight.timeOut) / 3600)
-    this.flight.totalFlightTime = Math.floor((this.flight.timeOn - this.flight.timeOff) / 3600)
+    this.flight.totalBlockTime = Math.floor((this.flight.timeIn - this.flight.timeOut) / 36) / 100
+    this.flight.totalFlightTime = Math.floor((this.flight.timeOn - this.flight.timeOff) / 36) / 100
     this.flight.fuelIn = data.fuelQuantityKg
     this.flight.usedFuel = this.flight.fuelOut - this.flight.fuelIn
     this.saveFlight()
