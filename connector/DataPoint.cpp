@@ -57,7 +57,8 @@ DataPoint::DataPoint(float elapsed) {
     float magVar = readDataF("sim/flightmodel/position/magnetic_variation");
     
     trackDeg = round(trueTrack + magVar);
-    speedGS = round(readDataF("sim/cockpit/radios/gps_dme_speed_kts"));
+	// groundspeed comes in m/s
+    speedGS = round(readDataF("sim/flightmodel/position/groundspeed") * 1.9438445);
     
     latitudeDeg = readDataF("sim/flightmodel/position/latitude");
     longitudeDeg = readDataF("sim/flightmodel/position/longitude");
