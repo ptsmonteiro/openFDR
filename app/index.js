@@ -23,7 +23,7 @@ function updateStateParam(id, value) {
   document.getElementById(id).innerHTML = value
 }
 
-ipcRenderer.on('state-update', (event, data) => {
+ipcRenderer.on('data-update', (event, data) => {
   updateStateParam('span-aircraft', data.aircraftType)
   updateStateParam('span-onground', data.heightFt < 1 ? 'yes' : 'no')
   updateStateParam('span-engines-running', data.engineRunning.includes(1) ? 'yes' : 'no')
@@ -76,7 +76,6 @@ ipcRenderer.on('flight-list', (event, flights) => {
     const d = new Date(f.timeOut * 1000)
     newFlight.querySelector("td.flight-date").innerHTML = dateFormat(d, "UTC:yyyy-mm-dd")
     newFlight.querySelector("td.flight-time").innerHTML = dateFormat(d, "UTC:HH:MM")
-    newFlight.querySelector("td.flight-number").innerHTML = f.number || 'N/A'
     newFlight.querySelector("td.flight-aircraft").innerHTML = f.aircraftType || 'N/A'
     newFlight.querySelector("td.flight-departure").innerHTML = f.departure || 'N/A'
     newFlight.querySelector("td.flight-destination").innerHTML = f.destination || 'N/A'
@@ -84,14 +83,11 @@ ipcRenderer.on('flight-list', (event, flights) => {
     newFlight.querySelector("td.flight-fuel").innerHTML = f.usedFuel || 'N/A'
 
     let status
-    if (!f.timeIn || !f.timeOff || !f.timeOn || !f.timeIn) {
-      status = 'Interrupted'
-    }
-    else if (!f.number || !f.departure || !f.destination || !f.alternate || !f.route) {
-      status = 'Information Missing'
+    if (!f.timeIn || !f.timeOff || !f.timeOn || !f.timeIn || !f.departure || !f.destination) {
+      status = 'Incomplete'
     }
     else if (!f.sent) {
-      status = 'Ready to Send'
+      status = 'Finished'
     }
     else {
       status = 'Sent'

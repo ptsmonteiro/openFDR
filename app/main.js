@@ -228,6 +228,7 @@ app.whenReady().then(() => {
 
   mainWindow.once('ready-to-show', () => {
     ipcMain.on('datapoint-received', (data) => {
+      mainWindow.webContents.send('data-update', data)
       recorder.update(data)
     })
 

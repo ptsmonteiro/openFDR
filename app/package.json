@@ -4,7 +4,9 @@
   "description": "ACARS application for X-Plane and Virtual Airlines",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "repository": "https://github.com/ptsmonteiro/openFDR/tree/master/app",
   "keywords": [
@@ -16,13 +18,46 @@
   "author": "Pedro Monteiro",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "electron": "^10.1.5"
   },
   "dependencies": {
     "axios": "^0.21.0",
     "dateformat": "^4.0.0",
+    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.1",
     "nedb": "^1.8.0",
     "spectre.css": "^0.5.9"
+  },
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "openfdr_app"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
   }
 }
