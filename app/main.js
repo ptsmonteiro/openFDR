@@ -122,16 +122,16 @@ function syncFlights(config) {
           }
         })
           .then(res => {
-            console.log(util.inspect(res.data))
+            //console.log(util.inspect(res.data))
             console.log(`Flight ${f.id} submitted sucessfully (server id '${res.data.data.id}')`)
-            //db.flights.update({ id:f.id }, { $set: { sent: 1 } }, {})
+            db.flights.update({ id:f.id }, { $set: { sent: 1 } }, {})
+            resolve();
           })
           .catch(error => {
             console.error(util.inspect(error.response.data))
             reject(error)
           })
       }
-      resolve();
     })
   })
 }
