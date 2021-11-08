@@ -121,6 +121,19 @@ openFDR will pass these headers in every request:
 
 ### Operations
 
+#### GET: /schedule
+Gets a list of scheduled flights.
+
+##### params:
+- offset
+- limit
+
+##### response:
+<...>
+
+#### GET: /booking
+Gets a list of booked scheduled flights.
+
 #### POST: /flight
 Creates/updates an ongoing flight.
 
