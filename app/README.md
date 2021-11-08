@@ -33,10 +33,10 @@ should define it's own rules on approving a flight and should check the flight d
   "destination": "LPPT",
   "alternate": "LPPR",
   "route": "ESP UL120 BLM",
-  "timeOut": "202005301011",
-  "timeOff": "202005301017",
-  "timeOn": "202005301241",
-  "timeIn": "202005301250",
+  "timeOut": "2012-01-18T11:45:00+01:00",
+  "timeOff": "2012-01-18T11:50:00+01:00",
+  "timeOn": "2012-01-18T14:30:00+01:00",
+  "timeIn": "2012-01-18T14:45:00+01:00",
   "totalBlockTime": 2.5,
   "totalFlightTime": 2.3,
   "dryOperatingWeight": 60000,
@@ -121,27 +121,23 @@ openFDR will pass these headers in every request:
 
 ### Operations
 
-#### POST: /live
-Sends a snapshot of live information of an ongoing flight.
+#### POST: /flight
+Creates/updates a new/existing flight.
 
 openFDR will call this regularly from the moment at least one engine is started
 to the moment engines are shutdown.
-##### request
-A [recording sample](#recording-sample) in JSON format.
-##### response status code
-- HTTP STATUS 200 (No errors)
-- HTTP STATUS 401 (Username/password mismatch)
-- HTTP STATUS 500 (Server side error)
-
-
-#### POST: /flight
-Creates/updates a new/existing flight.
 
 openFDR will call this to submit partial or complete information for a flight.
 The server should create or update the flight according to the provided flight ID.
 
 ##### request {#flight}
-[Flight data](#flight) (complete or partial) in JSON format.
+```json
+{
+  "flight": {...},
+  "sample": {...}
+}
+```
+"flight" is a [Flight data](#flight) (complete or partial) object and "sample" is a [Recording sample](#recording-sample) (optional).
 
 ##### response status code
 - HTTP STATUS 200 (No errors)
