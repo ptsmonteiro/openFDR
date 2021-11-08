@@ -122,13 +122,11 @@ openFDR will pass these headers in every request:
 ### Operations
 
 #### POST: /flight
-Creates/updates a new/existing flight.
+Creates/updates an ongoing flight.
 
 openFDR will call this regularly from the moment at least one engine is started
-to the moment engines are shutdown.
-
-openFDR will call this to submit partial or complete information for a flight.
-The server should create or update the flight according to the provided flight ID.
+to the moment all engines are shutdown to submit current data for a flight.
+After engine shutdown, openFDR will do a last call containing all the flight data so that the server can close the flight.
 
 ##### request {#flight}
 ```json
