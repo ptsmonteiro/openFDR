@@ -129,7 +129,44 @@ Gets a list of scheduled flights.
 - limit
 
 ##### response:
-<...>
+```json
+{
+  "success": true,
+  "message": "List of schedules",
+  "data": {
+    "offset": 10,
+    "limit": 3,
+    "schedules": [{
+      "flightNumber": "WF4002",
+      "departure": "SKBO",
+      "destination": "SETN",
+      "route": "GIR UR564 TCO R564 ANGEL",
+      "aircraftType": "B737-800",
+      "distance": "397.818",
+      "totalFlightTime": "1",
+      "aircraftRegistration": "ZE-B738"
+    }, {
+      "flightNumber": "ZE003",
+      "departure": "EDDM",
+      "destination": "OMDB",
+      "route": "KIRDI UL174 VELOM UL605 STEIN DCT TEGRI UL605 NEKUL UM747 CND UL851 ADINA L851 KUGOS UM860 CRM UM688 KATUT UP975 SESRA M677 RABAP UM677 OBNET M677 DESDI",
+      "aircraftType": "B777-200",
+      "distance": "2467.13",
+      "totalFlightTime": "6",
+      "aircraftRegistration": "ZE-B772"
+    }, {
+      "flightNumber": "EU1003",
+      "departure": "LFPG",
+      "destination": "LPPT",
+      "route": "LGL UT176 TERPO UN872 ERIGA UZ218 BAKUP DCT BATAX DCT INBOM",
+      "aircraftType": "A350-900",
+      "distance": "794.71",
+      "totalFlightTime": "2",
+      "aircraftRegistration": "ZE-A359"
+    }]
+  }
+}
+```
 
 #### GET: /booking
 Gets a list of booked scheduled flights.
