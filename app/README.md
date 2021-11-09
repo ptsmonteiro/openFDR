@@ -134,6 +134,35 @@ Gets a list of scheduled flights.
 #### GET: /booking
 Gets a list of booked scheduled flights.
 
+##### response:
+```json
+{
+  "success": true,
+  "message": "List of bookings",
+  "data": {
+    "bookings": [{
+      "flightNumber": "ZE007",
+      "departure": "LFPG",
+      "destination": "CYYZ",
+      "route": "ATREX UT225 VESAN UL613 SOVAT UL613 SANDY UL15 BIG UL9 STU UN546 BAKUR RESNO 5620N 5630N 5440N 5250N CRONO DOTTY YNA J553 PN YBC YBG YXI J597 YSO",
+      "aircraftType": "B777-200",
+      "distance": "3254.13",
+      "totalFlightTime": "7.3",
+      "aircraftRegistration": "ZE-B772"
+    }, {
+      "flightNumber": "EU1003",
+      "departure": "LFPG",
+      "destination": "LPPT",
+      "route": "LGL UT176 TERPO UN872 ERIGA UZ218 BAKUP DCT BATAX DCT INBOM",
+      "aircraftType": "A350-900",
+      "distance": "794.71",
+      "totalFlightTime": "2",
+      "aircraftRegistration": "ZE-A359"
+    }]
+  }
+}
+```
+
 #### POST: /flight
 Creates/updates an ongoing flight.
 
