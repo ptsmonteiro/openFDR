@@ -199,6 +199,59 @@ Gets a list of booked scheduled flights.
   }
 }
 ```
+#### GET: /flight
+Gets the list of flights
+
+##### response:
+```json
+{
+  "success": true,
+  "message": "Flights for pilot ZE365",
+  "data": {
+    "flights": [{
+      "number": "ZE999",
+      "departure": "KORD",
+      "destination": "CYUL",
+      "alternate": null,
+      "route": "ENTER YOUR ROUTE HERE",
+      "aircraftType": "A319-100",
+      "timeOut": null,
+      "timeOff": null,
+      "timeOn": null,
+      "timeIn": "2021-04-17T18:41:58+00:00",
+      "totalBlockTime": null,
+      "totalFlightTime": 1.6333333333333,
+      "dryOperatingWeight": null,
+      "payloadWeight": null,
+      "pax": 124,
+      "fuelOut": null,
+      "fuelOff": null,
+      "fuelOn": null,
+      "fuelIn": null,
+      "fuelUsed": 3680.9
+    }, {
+      "number": "ZE999",
+      "departure": "BIVM",
+      "destination": "BGBW",
+      "alternate": null,
+      "route": "DCT",
+      "aircraftType": "CESSNA 172",
+      "timeOut": null,
+      "timeOff": null,
+      "timeOn": null,
+      "timeIn": "2021-03-31T17:28:47+00:00",
+      "totalBlockTime": null,
+      "totalFlightTime": 7.45,
+      "dryOperatingWeight": null,
+      "payloadWeight": null,
+      "pax": 2,
+      "fuelOut": null,
+      "fuelOff": null,
+      "fuelOn": null,
+      "fuelIn": null,
+      "fuelUsed": 125.191
+    }
+```
 
 #### POST: /flight
 Creates/updates an ongoing flight.
