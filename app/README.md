@@ -233,11 +233,13 @@ Send recording data for a flight.
 
 openFDR might call this operation several times with different sample sets to contain the payload size of a single call.
 This allows for post flight analysis on the Virtual Airline (check exceedance of limits, level of realism, etc).
+When the last batch of the flight is being sent, 'final' should be set to "true".
 
 ##### request
 ```json
 {
   "flightId": "LFPO.LPPT.202005301011.A320.7124",
+  "final": "<true|false>,
   "samples": [...]
 }
 ```
