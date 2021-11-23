@@ -240,10 +240,9 @@ Unlike the other calls, for performance reasons this should be a form POST with 
 ###### metadata
 ```json
 {
-  "flightId": "LFPO.LPPT.202005301011.A320.7124",
+  "flightId": "359438752",
   "flightTimeStamp: "54689.43",
-  "final": "<true|false>,
-  "samples": [...]
+  "final": "<true|false>
 }
 ```
 ###### samples
