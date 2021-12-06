@@ -2,6 +2,7 @@
 
 ## Units
 
+- Time: seconds?
 - Altitude, Height: feet
 - Vertical Speed: feet per minute
 - Speeds: knots
