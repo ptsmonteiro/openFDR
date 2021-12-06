@@ -236,17 +236,13 @@ This allows for post flight analysis on the Virtual Airline (check exceedance of
 When the last batch of the flight is being sent, 'final' should be set to "true".
 
 ##### request
-Unlike the other calls, for performance reasons this should be a form POST with two fields ('metadata' and 'samples'):
-###### metadata
-```json
-{
-  "flightId": "359438752",
-  "flightTimeStamp: "54689.43",
-  "final": "<true|false>
-}
-```
-###### samples
-"samples" is a list of [recording samples](#recording-sample) in JSON format.
+Unlike the other calls, this should be multi-part form POST with the following fields:
+
+- "recordingId" (integer)
+- "data" (file upload)
+- "final" ("true"|"false")
+
+The "data" file being uploaded is a gzipped JSON file containing a list of [recording samples](#recording-sample).
 
 ##### response status code
 - HTTP STATUS 200 (No errors)
